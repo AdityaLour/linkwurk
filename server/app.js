@@ -4,7 +4,9 @@ import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 
-import sessionMiddleware from "./config/session"
+import sessionMiddleware from "./config/session.js"
+import authRoutes from './routes/authRoutes.js';
+
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -13,6 +15,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(sessionMiddleware());
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT | 5000
 
