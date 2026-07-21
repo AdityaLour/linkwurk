@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new.mongoose.Schema(
+const userSchema = new mongoose.Schema(
     {
         firstName: { type: String, required: true, trim: true },
         lastName: { type: String, trim: true },
@@ -8,7 +8,8 @@ const userSchema = new.mongoose.Schema(
         password: {
             type: String, required: function () {
                 return this.authType === "email"
-            }
+            },
+            minlength: 6
         },
         authType: { type: String, enum: ["email", "google"], required: true, default: "email" },
         role: {
@@ -20,7 +21,7 @@ const userSchema = new.mongoose.Schema(
             type: Boolean, default: true
         }
     }, {
-    timeStamps: true
+    timestamps: true
 }
 )
 
