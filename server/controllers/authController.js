@@ -88,3 +88,43 @@ export const signUp = async (req, res) => {
     }
 
 }
+
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        if (!email || !password) {
+            return res.status(404).json({ message: "Email and password is required" })
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() })
+        if (!user) {
+            return res.status(400).json({ message: "Invalid Credentials" })
+        }
+
+
+        if (!user.isActive) {
+            return res.status(403).json({ message: 'Account has been deactivated' });
+        }
+
+        if (user.authType !== 'email') {
+            return res.status(400).json({ message: `Please sign in with ${user.authType} instead` });
+        }
+
+        const comparePass = bcrypt.compare(password, user.password)
+
+        req.session.userId = user._id;
+        req.session.role = user.role;
+
+        res.status(200).json({
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Login failed', error: error.message });
+    }
+}
