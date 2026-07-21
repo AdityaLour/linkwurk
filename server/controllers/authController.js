@@ -1,7 +1,10 @@
 import bcrypt from "bcrypt"
+import { OAuth2Client } from 'google-auth-library';
+
 import User from "../models/User.js"
 import Recruiter from '../models/Recruiter.js';
 import Candidate from '../models/Candidate.js';
+
 
 
 export const signUp = async (req, res) => {
@@ -137,4 +140,51 @@ export const logout = (req, res) => {
         res.clearCookie('connect.sid');
         res.status(200).json({ message: 'Logged out successfully' });
     });
+};
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleAuth = async (req, res) => {
+    try {
+        const { idToken, role } = req.body;
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        let user = await User.findOne({ email: payload.email.toLowerCase() });
+
+        if (!user) {
+            if (!role || !['candidate', 'recruiter'].includes(role)) {
+                return res.status(400).json({ message: 'No account found — please sign up first' });
+            }
+
+            user = await User.create({
+                firstName: payload.given_name,
+                lastName: payload.family_name,
+                email: payload.email,
+                authType: 'google',
+                role,
+            });
+
+            if (role === 'recruiter') await Recruiter.create({ userId: user._id });
+            if (role === 'candidate') await Candidate.create({ userId: user._id });
+        }
+
+        if (!user.isActive) {
+            return res.status(403).json({ message: 'Account has been deactivated' });
+        }
+
+        req.session.userId = user._id;
+        req.session.role = user.role;
+
+        res.status(200).json({
+            user: { id: user._id, firstName: user.firstName, role: user.role },
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Google authentication failed', error: error.message });
+    }
 };
