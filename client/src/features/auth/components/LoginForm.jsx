@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { login, googleAuth } from "../api/authApi";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const { refreshUser } = useAuth();
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,8 +18,10 @@ export default function LoginForm() {
     setError("");
     try {
       await login(formData);
+      await refreshUser();
       navigate("/");
     } catch (err) {
+      console.log("Caught error:", err);
       setError(err.response?.data?.message || "Login failed");
     }
   };
@@ -26,6 +30,7 @@ export default function LoginForm() {
     setError("");
     try {
       await googleAuth({ idToken: credentialResponse.credential });
+      await refreshUser();
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Google login failed");

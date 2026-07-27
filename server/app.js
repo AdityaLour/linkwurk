@@ -7,6 +7,7 @@ import mongoose from "mongoose"
 import sessionMiddleware from "./config/session.js"
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import recruiterRoutes from './routes/recruiterRoutes.js';
 
 
 const app = express()
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(sessionMiddleware());
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/recruiters', recruiterRoutes);
 
 const PORT = process.env.PORT | 5000
 

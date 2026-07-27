@@ -188,3 +188,14 @@ export const googleAuth = async (req, res) => {
         res.status(500).json({ message: 'Google authentication failed', error: error.message });
     }
 };
+
+export const getMe = async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+    }
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) {
+        return res.status(401).json({ message: 'Not authenticated' });
+    }
+    res.status(200).json({ user });
+};
