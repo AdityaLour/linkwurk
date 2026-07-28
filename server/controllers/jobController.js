@@ -104,3 +104,33 @@ export const updateJobStatus = async (req, res) => {
         res.status(500).json({ message: 'Failed to update job status', error: err.message });
     }
 };
+
+export const getAllJobs = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const filter = { status: 'open' };
+
+        const [jobs, total] = await Promise.all([
+            Job.find(filter)
+                .populate('recruiterId', 'companyName companyLogo')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Job.countDocuments(filter),
+        ]);
+
+        res.status(200).json({
+            jobs,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                totalJobs: total,
+            },
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
+    }
+};
