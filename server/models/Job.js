@@ -13,6 +13,8 @@ const jobSchema = new mongoose.Schema(
             enum: ["Fresher", "0-1", "1-3", "3-5", "5-10", "10+"],
             default: "Fresher",
         },
+        numberOfOpenings: { type: Number, default: 1, min: 1 },
+        lastApplyDate: { type: Date, default: null },
         description: { type: String, required: true, trim: true },
         status: { type: String, enum: ['open', 'closed'], default: 'open' },
     },
