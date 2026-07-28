@@ -1,5 +1,6 @@
 import Job from '../models/Job.js';
 import Recruiter from '../models/Recruiter.js';
+import Candidate from '../models/Candidate.js';
 
 export const createJob = async (req, res) => {
     try {
@@ -155,5 +156,40 @@ export const getJobById = async (req, res) => {
         res.status(200).json({ job });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch job', error: err.message });
+    }
+};
+
+export const getRecommendedJobs = async (req, res) => {
+    try {
+        const candidate = await Candidate.findOne({ userId: req.session.userId });
+        if (!candidate) return res.status(404).json({ message: 'Candidate profile not found' });
+
+        const candidateSkills = new Set((candidate.skills || []).map((s) => s.toLowerCase().trim()));
+
+        if (candidateSkills.size === 0) {
+            return res.status(200).json({ jobs: [], message: 'Add skills to your profile to get recommendations' });
+        }
+
+        const openJobs = await Job.find({ status: 'open' }).populate('recruiterId', 'companyName companyLogo');
+
+        const scored = openJobs
+            .map((job) => {
+                const jobSkills = (job.skillsRequired || []).map((s) => s.toLowerCase().trim());
+                const matchCount = jobSkills.filter((s) => candidateSkills.has(s)).length;
+                const matchPercent = jobSkills.length ? Math.round((matchCount / jobSkills.length) * 100) : 0;
+                return { job, matchCount, matchPercent };
+            })
+            .filter((item) => item.matchCount > 0)
+            .sort((a, b) => b.matchPercent - a.matchPercent)
+            .slice(0, 10);
+
+        const jobs = scored.map((item) => ({
+            ...item.job.toObject(),
+            matchPercent: item.matchPercent,
+        }));
+
+        res.status(200).json({ jobs });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch recommendations', error: err.message });
     }
 };
