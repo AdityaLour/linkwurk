@@ -11,7 +11,8 @@ export const createJob = async (req, res) => {
             });
         }
 
-        const { title, location, salaryMin, salaryMax, skillsRequired, experienceRequired, description } = req.body;
+        const { title, location, salaryMin, salaryMax, skillsRequired, experienceRequired, description, numberOfOpenings,
+            lastApplyDate, applicationType, externalApplyUrl } = req.body;
 
         if (!title || !location || !description) {
             return res.status(400).json({ message: 'Title, location, and description are required' });
@@ -26,6 +27,10 @@ export const createJob = async (req, res) => {
             skillsRequired,
             experienceRequired,
             description,
+            numberOfOpenings,
+            lastApplyDate,
+            applicationType,
+            externalApplyUrl,
         });
 
         res.status(201).json({ job });
@@ -62,6 +67,14 @@ export const updateJob = async (req, res) => {
         if (skillsRequired !== undefined) job.skillsRequired = skillsRequired;
         if (experienceRequired !== undefined) job.experienceRequired = experienceRequired;
         if (description !== undefined) job.description = description;
+        if (numberOfOpenings !== undefined) job.numberOfOpenings = numberOfOpenings;
+        if (lastApplyDate !== undefined) job.lastApplyDate = lastApplyDate;
+        if (applicationType !== undefined) job.applicationType = applicationType;
+        if (externalApplyUrl !== undefined) job.externalApplyUrl = externalApplyUrl;
+
+        if (job.applicationType === 'external' && !job.externalApplyUrl) {
+            return res.status(400).json({ message: 'External applications require an application URL' });
+        }
 
         await job.save();
         res.status(200).json({ job });
@@ -132,5 +145,15 @@ export const getAllJobs = async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
+    }
+};
+
+export const getJobById = async (req, res) => {
+    try {
+        const job = await Job.findById(req.params.id).populate('recruiterId', 'companyName companyLogo website companyTagline address');
+        if (!job) return res.status(404).json({ message: 'Job not found' });
+        res.status(200).json({ job });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch job', error: err.message });
     }
 };

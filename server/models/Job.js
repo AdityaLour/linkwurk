@@ -16,6 +16,8 @@ const jobSchema = new mongoose.Schema(
         numberOfOpenings: { type: Number, default: 1, min: 1 },
         lastApplyDate: { type: Date, default: null },
         description: { type: String, required: true, trim: true },
+        applicationType: { type: String, enum: ['internal', 'external'], default: 'internal' },
+        externalApplyUrl: { type: String, trim: true, default: '' },
         status: { type: String, enum: ['open', 'closed'], default: 'open' },
     },
     { timestamps: true }
