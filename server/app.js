@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import recruiterRoutes from './routes/recruiterRoutes.js';
 import candidateRoutes from './routes/candidateRoutes.js';
+import jobRoutes from './routes/jobRoutes.js';
 
 
 const app = express()
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/recruiters', recruiterRoutes);
 app.use('/api/candidates', candidateRoutes);
+app.use('/api/jobs', jobRoutes);
 
 const PORT = process.env.PORT | 5000
 
