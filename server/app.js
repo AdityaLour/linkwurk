@@ -11,6 +11,8 @@ import recruiterRoutes from './routes/recruiterRoutes.js';
 import candidateRoutes from './routes/candidateRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import interviewRoutes from './routes/interviewRoutes.js';
+
 
 
 
@@ -28,6 +30,7 @@ app.use('/api/recruiters', recruiterRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/interviews', interviewRoutes);
 
 const PORT = process.env.PORT | 5000
 
