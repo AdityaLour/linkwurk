@@ -12,8 +12,7 @@ import candidateRoutes from './routes/candidateRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
 import interviewRoutes from './routes/interviewRoutes.js';
-
-
+import savedJobRoutes from './routes/savedJobsRoutes.js';
 
 
 const app = express()
@@ -31,6 +30,7 @@ app.use('/api/candidates', candidateRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/interviews', interviewRoutes);
+app.use('/api/saved-jobs', savedJobRoutes);
 
 const PORT = process.env.PORT | 5000
 
