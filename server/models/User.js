@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema(
         firstName: { type: String, required: true, trim: true },
         lastName: { type: String, trim: true },
         email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+        isEmailVerified: { type: Boolean, default: false },
         password: {
             type: String, required: function () {
                 return this.authType === "email"

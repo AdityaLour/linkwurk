@@ -1,10 +1,11 @@
 import bcrypt from "bcrypt"
 import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
 
 import User from "../models/User.js"
 import Recruiter from '../models/Recruiter.js';
 import Candidate from '../models/Candidate.js';
-
+import { sendVerificationEmail } from '../lib/email.js';
 
 
 export const signUp = async (req, res) => {
@@ -167,6 +168,8 @@ export const googleAuth = async (req, res) => {
                 email: payload.email,
                 authType: 'google',
                 role,
+                isEmailVerified: true,
+
             });
 
             if (role === 'recruiter') await Recruiter.create({ userId: user._id });
@@ -198,4 +201,33 @@ export const getMe = async (req, res) => {
         return res.status(401).json({ message: 'Not authenticated' });
     }
     res.status(200).json({ user });
+};
+
+export const requestEmailVerification = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        if (user.isEmailVerified) return res.status(400).json({ message: 'Email already verified' });
+
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        await sendVerificationEmail(user.email, token);
+
+        res.status(200).json({ message: 'Verification email sent' });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to send verification email', error: err.message });
+    }
+};
+
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.isEmailVerified = true;
+        await user.save();
+        res.status(200).json({ message: 'Email verified successfully' });
+    } catch (err) {
+        res.status(400).json({ message: 'Invalid or expired verification link' });
+    }
 };
