@@ -17,7 +17,11 @@ export default function RoleSelector() {
       <Typography color="text.secondary" sx={{ mb: 4 }}>
         Choose how you'll use LinkWurk.
       </Typography>
-      <Stack spacing={2} sx={{ maxWidth: 320 }}>
+      <Stack
+        spacing={2}
+        sx={{ width: "100%", maxWidth: { xs: "100%", sm: 320 } }}
+      >
+        {" "}
         <Button
           variant="contained"
           color="primary"

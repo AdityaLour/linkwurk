@@ -66,7 +66,11 @@ export default function LoginForm() {
         </Alert>
       )}
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 360 }}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ width: "100%", maxWidth: { xs: "100%", sm: 360 } }}
+      >
         <Stack spacing={2}>
           <TextField
             name="email"
@@ -102,9 +106,11 @@ export default function LoginForm() {
         </Stack>
       </Box>
 
-      <Divider sx={{ my: 3, maxWidth: 360 }}>or</Divider>
+      <Divider sx={{ my: 3, width: "100%", maxWidth: { xs: "100%", sm: 360 } }}>
+        or
+      </Divider>
 
-      <Box sx={{ maxWidth: 360 }}>
+      <Box sx={{ width: "100%", maxWidth: { xs: "100%", sm: 360 } }}>
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={() => setError("Google login failed")}

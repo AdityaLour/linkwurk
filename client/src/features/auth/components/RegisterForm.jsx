@@ -84,7 +84,6 @@ export default function RegisterForm() {
       panelType={role}
       panelVariant="signup"
     >
-      {" "}
       <Typography variant="h4" sx={{ mb: 1 }}>
         Sign up as {role}
       </Typography>
@@ -96,7 +95,11 @@ export default function RegisterForm() {
           {error}
         </Alert>
       )}
-      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 360 }}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ width: "100%", maxWidth: { xs: "100%", sm: 360 } }}
+      >
         <Stack spacing={2}>
           <TextField
             name="firstName"
@@ -146,8 +149,10 @@ export default function RegisterForm() {
           </Button>
         </Stack>
       </Box>
-      <Divider sx={{ my: 3, maxWidth: 360 }}>or</Divider>
-      <Box sx={{ maxWidth: 360 }}>
+      <Divider sx={{ my: 3, width: "100%", maxWidth: { xs: "100%", sm: 360 } }}>
+        or
+      </Divider>
+      <Box sx={{ width: "100%", maxWidth: { xs: "100%", sm: 360 } }}>
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={() => setError("Google sign-up failed")}

@@ -18,8 +18,8 @@ export default function AuthLayout({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          px: 4,
-          py: 6,
+          px: { xs: 3, sm: 4, md: 6 },
+          py: { xs: 4, md: 6 },
           position: "relative",
           overflow: "hidden",
         }}
@@ -52,9 +52,14 @@ export default function AuthLayout({
         />
 
         <Box
-          sx={{ width: "100%", maxWidth: 380, position: "relative", zIndex: 1 }}
+          sx={{
+            width: "100%",
+            maxWidth: { xs: "100%", sm: 380 },
+            position: "relative",
+            zIndex: 1,
+          }}
         >
-          <Typography variant="h3" sx={{ mb: 5 }}>
+          <Typography variant="h3" sx={{ mb: { xs: 3, md: 5 } }}>
             LinkWurk
           </Typography>
           {children}
@@ -70,7 +75,7 @@ export default function AuthLayout({
           alignItems: "center",
           bgcolor: "primary.main",
           color: "primary.contrastText",
-          px: 6,
+          px: { md: 4, lg: 6 },
           position: "relative",
           overflow: "hidden",
         }}
@@ -112,7 +117,15 @@ export default function AuthLayout({
           }}
         />
 
-        <Box sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+        <Box
+          sx={{
+            position: "relative",
+            zIndex: 1,
+            textAlign: "center",
+            width: "100%",
+            maxWidth: 380,
+          }}
+        >
           {panelType === "recruiter" ? (
             <RecruiterPanel variant={panelVariant} />
           ) : panelType === "candidate" ? (
@@ -120,8 +133,9 @@ export default function AuthLayout({
               <Typography
                 variant="h4"
                 sx={{
-                  mb: 6,
+                  mb: { md: 4, lg: 6 },
                   maxWidth: 360,
+                  mx: "auto",
                   opacity: 0,
                   animation:
                     "fadeSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards",
