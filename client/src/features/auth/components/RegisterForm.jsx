@@ -56,7 +56,9 @@ export default function RegisterForm() {
       await signUp({ ...formData, role, authType: "email" });
       await refreshUser();
       navigate(
-        role === "recruiter" ? "/recruiter/onboarding/company-info" : "/",
+        role === "recruiter"
+          ? "/recruiter/onboarding/company-info"
+          : "/candidate/onboarding/skills",
       );
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -70,8 +72,11 @@ export default function RegisterForm() {
     try {
       await googleAuth({ idToken: credentialResponse.credential, role });
       await refreshUser();
+
       navigate(
-        role === "recruiter" ? "/recruiter/onboarding/company-info" : "/",
+        role === "recruiter"
+          ? "/recruiter/onboarding/company-info"
+          : "/candidate/onboarding/skills",
       );
     } catch (err) {
       setError(err.response?.data?.message || "Google sign-up failed");

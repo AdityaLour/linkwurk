@@ -1,0 +1,174 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  TextField,
+  Button,
+  Stack,
+  Autocomplete,
+  Typography,
+  IconButton,
+  Grid,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import OnboardingLayout from "@/components/OnboardingLayout";
+import { updateMyCandidateProfile } from "../api/candidatesApi";
+
+const emptyEducation = {
+  institution: "",
+  degree: "",
+  startYear: "",
+  endYear: "",
+};
+
+export default function SkillsEducationForm() {
+  const navigate = useNavigate();
+  const [skills, setSkills] = useState([]);
+  const [education, setEducation] = useState([{ ...emptyEducation }]);
+  const [loading, setLoading] = useState(false);
+
+  const updateEducationField = (index, field, value) => {
+    const next = [...education];
+    next[index][field] = value;
+    setEducation(next);
+  };
+
+  const addEducation = () =>
+    setEducation([...education, { ...emptyEducation }]);
+  const removeEducation = (index) =>
+    setEducation(education.filter((_, i) => i !== index));
+
+  const saveAndContinue = async () => {
+    setLoading(true);
+    const data = new FormData();
+    data.append("skills", JSON.stringify(skills));
+    data.append(
+      "education",
+      JSON.stringify(education.filter((e) => e.institution)),
+    );
+    try {
+      await updateMyCandidateProfile(data);
+    } finally {
+      setLoading(false);
+      navigate("/candidate/onboarding/resume");
+    }
+  };
+
+  return (
+    <OnboardingLayout
+      title="Skills & education"
+      subtitle="Helps us match you to the right jobs."
+      activeStep={0}
+      steps={["Skills & education", "Resume & certifications"]}
+    >
+      <Stack spacing={4}>
+        <Box>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Skills
+          </Typography>
+          <Autocomplete
+            multiple
+            freeSolo
+            options={[]}
+            value={skills}
+            onChange={(e, newValue) => setSkills(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Type a skill and press Enter"
+              />
+            )}
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Education
+          </Typography>
+          <Stack spacing={2}>
+            {education.map((entry, i) => (
+              <Grid container spacing={1.5} key={i} alignItems="center">
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Institution"
+                    fullWidth
+                    size="small"
+                    value={entry.institution}
+                    onChange={(e) =>
+                      updateEducationField(i, "institution", e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    label="Degree"
+                    fullWidth
+                    size="small"
+                    value={entry.degree}
+                    onChange={(e) =>
+                      updateEducationField(i, "degree", e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={5} sm={2}>
+                  <TextField
+                    label="Start year"
+                    fullWidth
+                    size="small"
+                    type="number"
+                    value={entry.startYear}
+                    onChange={(e) =>
+                      updateEducationField(i, "startYear", e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={5} sm={2}>
+                  <TextField
+                    label="End year"
+                    fullWidth
+                    size="small"
+                    type="number"
+                    value={entry.endYear}
+                    onChange={(e) =>
+                      updateEducationField(i, "endYear", e.target.value)
+                    }
+                  />
+                </Grid>
+                <Grid item xs={2} sm={1}>
+                  <IconButton
+                    onClick={() => removeEducation(i)}
+                    disabled={education.length === 1}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            ))}
+          </Stack>
+          <Button startIcon={<AddIcon />} onClick={addEducation} sx={{ mt: 1 }}>
+            Add another
+          </Button>
+        </Box>
+
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={saveAndContinue}
+            disabled={loading}
+          >
+            Save & continue
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => navigate("/candidate/onboarding/resume")}
+          >
+            Skip for now
+          </Button>
+        </Stack>
+      </Stack>
+    </OnboardingLayout>
+  );
+}

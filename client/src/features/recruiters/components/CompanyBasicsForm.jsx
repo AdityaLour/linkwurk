@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box, TextField, MenuItem, Button, Stack } from "@mui/material";
+import OnboardingLayout from "@/components/OnboardingLayout";
 import { updateMyRecruiterProfile } from "../api/recruitersApi";
+
+const EMPLOYEE_RANGES = ["1-10", "11-50", "51-200", "201-500", "500+"];
 
 export default function CompanyBasicsForm() {
   const navigate = useNavigate();
@@ -9,48 +13,85 @@ export default function CompanyBasicsForm() {
     website: "",
     numberOfEmployees: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const saveAndContinue = async () => {
+    setLoading(true);
     const data = new FormData();
     Object.entries(formData).forEach(([k, v]) => data.append(k, v));
-    await updateMyRecruiterProfile(data);
-    navigate("/recruiter/onboarding/branding");
+    try {
+      await updateMyRecruiterProfile(data);
+    } finally {
+      setLoading(false);
+      navigate("/recruiter/onboarding/branding");
+    }
   };
 
   return (
-    <div>
-      <h2>Company Basics</h2>
-      <input
-        name="companyName"
-        placeholder="Company Name"
-        value={formData.companyName}
-        onChange={handleChange}
-      />
-      <input
-        name="website"
-        placeholder="Website"
-        value={formData.website}
-        onChange={handleChange}
-      />
-      <select
-        name="numberOfEmployees"
-        value={formData.numberOfEmployees}
-        onChange={handleChange}
+    <OnboardingLayout
+      title="Company basics"
+      subtitle="Tell candidates who you are."
+      activeStep={0}
+      steps={["Company basics", "Branding"]}
+    >
+      <Box
+        component="form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          saveAndContinue();
+        }}
       >
-        <option value="">Select size</option>
-        <option value="1-10">1-10</option>
-        <option value="11-50">11-50</option>
-        <option value="51-200">51-200</option>
-        <option value="201-500">201-500</option>
-        <option value="500+">500+</option>
-      </select>
-      <button onClick={saveAndContinue}>Save & Continue</button>
-      <button onClick={() => navigate("/recruiter/onboarding/branding")}>
-        Skip
-      </button>
-    </div>
+        <Stack spacing={2.5}>
+          <TextField
+            name="companyName"
+            label="Company name"
+            value={formData.companyName}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            name="website"
+            label="Website"
+            value={formData.website}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            name="numberOfEmployees"
+            label="Company size"
+            select
+            value={formData.numberOfEmployees}
+            onChange={handleChange}
+            fullWidth
+          >
+            {EMPLOYEE_RANGES.map((range) => (
+              <MenuItem key={range} value={range}>
+                {range} employees
+              </MenuItem>
+            ))}
+          </TextField>
+          <Stack direction="row" spacing={2} sx={{ pt: 1 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={saveAndContinue}
+              disabled={loading}
+            >
+              Save & continue
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => navigate("/recruiter/onboarding/branding")}
+            >
+              Skip for now
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </OnboardingLayout>
   );
 }

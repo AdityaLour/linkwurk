@@ -5,6 +5,8 @@ import LoginPage from "@/pages/auth/LoginPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import CompanyBasicsPage from "@/pages/recruiter/CompanyBasicsPage";
 import CompanyBrandingPage from "@/pages/recruiter/CompanyBrandingPage";
+import CandidateOnboardingSkillsPage from "@/pages/candidate/CandidateOnboardingSkillsPage";
+import CandidateOnboardingResumePage from "@/pages/candidate/CandidateOnboardingResumePage";
 import HomePage from "@/pages/HomePage";
 
 function App() {
@@ -31,7 +33,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-        ;
+        <Route
+          path="/candidate/onboarding/skills"
+          element={
+            <ProtectedRoute allowedRole="candidate">
+              <CandidateOnboardingSkillsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/candidate/onboarding/resume"
+          element={
+            <ProtectedRoute allowedRole="candidate">
+              <CandidateOnboardingResumePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
