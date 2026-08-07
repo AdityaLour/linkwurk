@@ -1,21 +1,40 @@
 import { useNavigate } from "react-router-dom";
+import { Button, Stack, Typography } from "@mui/material";
+import AuthLayout from "@/components/AuthLayout";
 
 export default function RoleSelector() {
   const navigate = useNavigate();
 
-  const roleSelect = (role) => {
+  const selectRole = (role) => {
     navigate(`/signUp?role=${role}`);
   };
 
   return (
-    <div className="Main">
-      <h1 className="heading">Continue As</h1>
-      <div className="candidate">
-        <button onClick={() => roleSelect("candidate")}>Candidate</button>
-      </div>
-      <div className="Recruiter">
-        <button onClick={() => roleSelect("recruiter")}>Recruiter</button>
-      </div>
-    </div>
+    <AuthLayout tagline="Where skills meet the right role.">
+      <Typography variant="h4" sx={{ mb: 1 }}>
+        Continue as
+      </Typography>
+      <Typography color="text.secondary" sx={{ mb: 4 }}>
+        Choose how you'll use LinkWurk.
+      </Typography>
+      <Stack spacing={2} sx={{ maxWidth: 320 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={() => selectRole("candidate")}
+        >
+          Candidate
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          size="large"
+          onClick={() => selectRole("recruiter")}
+        >
+          Recruiter
+        </Button>
+      </Stack>
+    </AuthLayout>
   );
 }
