@@ -5,3 +5,4 @@ export const updateMyCandidateProfile = (formData) =>
     api.put('/api/candidates/me', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
+export const getCandidateDashboard = () => api.get('/api/candidates/me/dashboard');

@@ -7,13 +7,13 @@ import CompanyBasicsPage from "@/pages/recruiter/CompanyBasicsPage";
 import CompanyBrandingPage from "@/pages/recruiter/CompanyBrandingPage";
 import CandidateOnboardingSkillsPage from "@/pages/candidate/CandidateOnboardingSkillsPage";
 import CandidateOnboardingResumePage from "@/pages/candidate/CandidateOnboardingResumePage";
-import HomePage from "@/pages/HomePage";
+import HomeRouter from "@/pages/HomeRouter";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeRouter />} />
         <Route path="/signUp" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/role-select" element={<RoleSelectPage />} />
