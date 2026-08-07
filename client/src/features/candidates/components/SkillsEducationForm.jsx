@@ -5,7 +5,6 @@ import {
   TextField,
   Button,
   Stack,
-  Autocomplete,
   Typography,
   IconButton,
   Grid,
@@ -13,6 +12,8 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import OnboardingLayout from "@/components/OnboardingLayout";
+import SkillsAutocomplete from "./SkillsAutocomplete";
+import UniversityAutocomplete from "./UniversityAutocomplete";
 import { updateMyCandidateProfile } from "../api/candidatesApi";
 
 const emptyEducation = {
@@ -67,19 +68,7 @@ export default function SkillsEducationForm() {
           <Typography variant="body2" sx={{ mb: 1 }}>
             Skills
           </Typography>
-          <Autocomplete
-            multiple
-            freeSolo
-            options={[]}
-            value={skills}
-            onChange={(e, newValue) => setSkills(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="Type a skill and press Enter"
-              />
-            )}
-          />
+          <SkillsAutocomplete value={skills} onChange={setSkills} />
         </Box>
 
         <Box>
@@ -88,62 +77,69 @@ export default function SkillsEducationForm() {
           </Typography>
           <Stack spacing={2}>
             {education.map((entry, i) => (
-              <Grid container spacing={1.5} key={i} alignItems="center">
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    label="Institution"
-                    fullWidth
-                    size="small"
+              <Box
+                key={i}
+                sx={{
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  p: 2,
+                }}
+              >
+                <Box sx={{ mb: 1.5 }}>
+                  <UniversityAutocomplete
                     value={entry.institution}
-                    onChange={(e) =>
-                      updateEducationField(i, "institution", e.target.value)
+                    onChange={(value) =>
+                      updateEducationField(i, "institution", value)
                     }
                   />
+                </Box>
+                <Grid container spacing={1.5} alignItems="center">
+                  <Grid item xs={12} sm={5}>
+                    <TextField
+                      label="Degree"
+                      fullWidth
+                      size="small"
+                      value={entry.degree}
+                      onChange={(e) =>
+                        updateEducationField(i, "degree", e.target.value)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={5} sm={3}>
+                    <TextField
+                      label="Start year"
+                      fullWidth
+                      size="small"
+                      type="number"
+                      value={entry.startYear}
+                      onChange={(e) =>
+                        updateEducationField(i, "startYear", e.target.value)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={5} sm={3}>
+                    <TextField
+                      label="End year"
+                      fullWidth
+                      size="small"
+                      type="number"
+                      value={entry.endYear}
+                      onChange={(e) =>
+                        updateEducationField(i, "endYear", e.target.value)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={2} sm={1}>
+                    <IconButton
+                      onClick={() => removeEducation(i)}
+                      disabled={education.length === 1}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={3}>
-                  <TextField
-                    label="Degree"
-                    fullWidth
-                    size="small"
-                    value={entry.degree}
-                    onChange={(e) =>
-                      updateEducationField(i, "degree", e.target.value)
-                    }
-                  />
-                </Grid>
-                <Grid item xs={5} sm={2}>
-                  <TextField
-                    label="Start year"
-                    fullWidth
-                    size="small"
-                    type="number"
-                    value={entry.startYear}
-                    onChange={(e) =>
-                      updateEducationField(i, "startYear", e.target.value)
-                    }
-                  />
-                </Grid>
-                <Grid item xs={5} sm={2}>
-                  <TextField
-                    label="End year"
-                    fullWidth
-                    size="small"
-                    type="number"
-                    value={entry.endYear}
-                    onChange={(e) =>
-                      updateEducationField(i, "endYear", e.target.value)
-                    }
-                  />
-                </Grid>
-                <Grid item xs={2} sm={1}>
-                  <IconButton
-                    onClick={() => removeEducation(i)}
-                    disabled={education.length === 1}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
+              </Box>
             ))}
           </Stack>
           <Button startIcon={<AddIcon />} onClick={addEducation} sx={{ mt: 1 }}>
