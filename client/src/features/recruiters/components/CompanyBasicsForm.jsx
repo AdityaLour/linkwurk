@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, TextField, MenuItem, Button, Stack } from "@mui/material";
+import {
+  Box,
+  TextField,
+  MenuItem,
+  Button,
+  Stack,
+  Typography,
+} from "@mui/material";
 import OnboardingLayout from "@/components/OnboardingLayout";
-import { updateMyRecruiterProfile } from "../api/recruitersApi";
+import {
+  updateMyRecruiterProfile,
+  getMyRecruiterProfile,
+} from "../api/recruitersApi";
 
 const EMPLOYEE_RANGES = ["1-10", "11-50", "51-200", "201-500", "500+"];
 
@@ -14,6 +24,20 @@ export default function CompanyBasicsForm() {
     numberOfEmployees: "",
   });
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    getMyRecruiterProfile()
+      .then((res) => {
+        const r = res.data.recruiter;
+        setFormData({
+          companyName: r.companyName || "",
+          website: r.website || "",
+          numberOfEmployees: r.numberOfEmployees || "",
+        });
+      })
+      .finally(() => setInitialLoading(false));
+  }, []);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +53,19 @@ export default function CompanyBasicsForm() {
       navigate("/recruiter/onboarding/branding");
     }
   };
+
+  if (initialLoading) {
+    return (
+      <OnboardingLayout
+        title="Company basics"
+        subtitle="Tell candidates who you are."
+        activeStep={0}
+        steps={["Company basics", "Branding"]}
+      >
+        <Typography color="text.secondary">Loading your profile...</Typography>
+      </OnboardingLayout>
+    );
+  }
 
   return (
     <OnboardingLayout

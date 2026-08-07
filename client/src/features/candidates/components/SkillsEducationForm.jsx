@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -14,7 +14,10 @@ import AddIcon from "@mui/icons-material/Add";
 import OnboardingLayout from "@/components/OnboardingLayout";
 import SkillsAutocomplete from "./SkillsAutocomplete";
 import UniversityAutocomplete from "./UniversityAutocomplete";
-import { updateMyCandidateProfile } from "../api/candidatesApi";
+import {
+  updateMyCandidateProfile,
+  getMyCandidateProfile,
+} from "../api/candidatesApi";
 
 const emptyEducation = {
   institution: "",
@@ -28,6 +31,17 @@ export default function SkillsEducationForm() {
   const [skills, setSkills] = useState([]);
   const [education, setEducation] = useState([{ ...emptyEducation }]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    getMyCandidateProfile()
+      .then((res) => {
+        const candidate = res.data.candidate;
+        if (candidate.skills?.length) setSkills(candidate.skills);
+        if (candidate.education?.length) setEducation(candidate.education);
+      })
+      .finally(() => setInitialLoading(false));
+  }, []);
 
   const updateEducationField = (index, field, value) => {
     const next = [...education];
@@ -55,6 +69,19 @@ export default function SkillsEducationForm() {
       navigate("/candidate/onboarding/resume");
     }
   };
+
+  if (initialLoading) {
+    return (
+      <OnboardingLayout
+        title="Skills & education"
+        subtitle="Helps us match you to the right jobs."
+        activeStep={0}
+        steps={["Skills & education", "Resume & certifications"]}
+      >
+        <Typography color="text.secondary">Loading your profile...</Typography>
+      </OnboardingLayout>
+    );
+  }
 
   return (
     <OnboardingLayout
