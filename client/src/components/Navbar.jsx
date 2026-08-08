@@ -21,6 +21,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
+
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
@@ -53,27 +56,46 @@ export default function Navbar() {
   ];
   const links = user?.role === "recruiter" ? recruiterLinks : candidateLinks;
 
+  const navLinkSx = {
+    fontWeight: 700,
+    fontSize: "0.8rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.3px",
+    color: "#2F5A33",
+    cursor: "pointer",
+    px: 1.2,
+    py: 0.6,
+    border: "2px solid transparent",
+    transition:
+      "border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, color 0.15s ease",
+    "&:hover": {
+      color: DARK,
+      borderColor: DARK,
+      bgcolor: "#FFFFFF",
+      boxShadow: `3px 3px 0px ${GREEN}`,
+      transform: "translate(-1px, -1px)",
+    },
+  };
+
   return (
     <AppBar
       position="static"
       elevation={0}
-      color="transparent"
-      sx={{
-        bgcolor: "background.paper",
-        borderBottom: "1px solid",
-        borderColor: "divider",
-      }}
+      sx={{ bgcolor: "#FFFFFF", borderBottom: `3px solid ${DARK}` }}
     >
       <Toolbar sx={{ justifyContent: "space-between", px: { xs: 2, md: 4 } }}>
         <Typography
-          variant="h6"
+          onClick={() => navigate("/")}
           sx={{
             fontFamily: '"Space Grotesk", sans-serif',
-            fontWeight: 700,
-            color: "primary.main",
+            fontWeight: 800,
+            fontSize: "1.3rem",
+            color: DARK,
             cursor: "pointer",
+            display: "inline-block",
+            transition: "transform 0.15s ease",
+            "&:hover": { transform: "translate(-1px, -1px)" },
           }}
-          onClick={() => navigate("/")}
         >
           LinkWurk
         </Typography>
@@ -82,34 +104,14 @@ export default function Navbar() {
           sx={{
             display: { xs: "none", md: "flex" },
             alignItems: "center",
-            gap: 3.5,
+            gap: 1.5,
           }}
         >
           {links.map((link) => (
             <Typography
               key={link.to}
               onClick={() => navigate(link.to)}
-              sx={{
-                fontSize: "0.95rem",
-                fontWeight: 500,
-                color: "text.secondary",
-                cursor: "pointer",
-                position: "relative",
-                pb: "4px",
-                transition: "color 0.2s ease",
-                "&:hover": { color: "primary.main" },
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  left: 0,
-                  bottom: 0,
-                  height: "2px",
-                  width: 0,
-                  bgcolor: "primary.main",
-                  transition: "width 0.4s cubic-bezier(0.4,0,0.2,1)",
-                },
-                "&:hover::after": { width: "100%" },
-              }}
+              sx={navLinkSx}
             >
               {link.label}
             </Typography>
@@ -126,8 +128,7 @@ export default function Navbar() {
                       position: "absolute",
                       inset: 0,
                       borderRadius: "50%",
-                      border: "2px solid",
-                      borderColor: "secondary.main",
+                      border: `2px solid ${GREEN}`,
                       animation: "ripple 0.6s ease-out",
                       "@keyframes ripple": {
                         from: { transform: "scale(0.6)", opacity: 0.8 },
@@ -139,8 +140,18 @@ export default function Navbar() {
                 <IconButton
                   onClick={handleBellClick}
                   sx={{
-                    opacity: 0.6,
+                    border: `2px solid ${DARK}`,
+                    borderRadius: 0,
+                    width: 38,
+                    height: 38,
+                    color: DARK,
+                    boxShadow: `2px 2px 0px ${GREEN}`,
                     transformOrigin: "50% 20%",
+                    transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                    "&:hover": {
+                      boxShadow: `3px 3px 0px ${GREEN}`,
+                      transform: "translate(-1px, -1px)",
+                    },
                     animation: ringing ? "bellRing 0.6s ease-in-out" : "none",
                     "@keyframes bellRing": {
                       "0%, 100%": { transform: "rotate(0deg)" },
@@ -153,17 +164,28 @@ export default function Navbar() {
                     },
                   }}
                 >
-                  <NotificationsNoneIcon />
+                  <NotificationsNoneIcon fontSize="small" />
                 </IconButton>
               </Box>
+
               <Popover
                 open={Boolean(bellAnchor)}
                 anchorEl={bellAnchor}
                 onClose={() => setBellAnchor(null)}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      border: `2.5px solid ${DARK}`,
+                      borderRadius: 0,
+                      boxShadow: `4px 4px 0px ${GREEN}`,
+                      mt: 1,
+                    },
+                  },
+                }}
               >
                 <Box sx={{ p: 2, maxWidth: 240 }}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: "#2F5A33" }}>
                     Notifications are coming soon. We'll let you know the moment
                     applications change status.
                   </Typography>
@@ -171,42 +193,110 @@ export default function Navbar() {
               </Popover>
 
               <Avatar
+                variant="square"
+                onClick={(e) => setAnchorEl(e.currentTarget)}
                 sx={{
                   width: 36,
                   height: 36,
-                  bgcolor: "secondary.main",
+                  bgcolor: "#66BB6A",
+                  color: DARK,
+                  border: `2.5px solid ${DARK}`,
+                  boxShadow: `2px 2px 0px ${GREEN}`,
                   cursor: "pointer",
+                  fontWeight: 700,
                   fontSize: "0.85rem",
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  "&:hover": {
+                    boxShadow: `3px 3px 0px ${GREEN}`,
+                    transform: "translate(-1px, -1px)",
+                  },
                 }}
-                onClick={(e) => setAnchorEl(e.currentTarget)}
               >
                 {user.firstName?.[0]?.toUpperCase() || "?"}
               </Avatar>
+
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl(null)}
                 autoFocus={false}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      border: `2.5px solid ${DARK}`,
+                      borderRadius: 0,
+                      boxShadow: `4px 4px 0px ${GREEN}`,
+                      mt: 1,
+                    },
+                  },
+                }}
               >
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    fontSize: "0.8rem",
+                    color: DARK,
+                  }}
+                >
+                  Logout
+                </MenuItem>
               </Menu>
 
               <IconButton
-                sx={{ display: { xs: "flex", md: "none" } }}
+                sx={{
+                  display: { xs: "flex", md: "none" },
+                  border: `2px solid ${DARK}`,
+                  borderRadius: 0,
+                  color: DARK,
+                }}
                 onClick={() => setDrawerOpen(true)}
               >
-                <MenuIcon />
+                <MenuIcon fontSize="small" />
               </IconButton>
             </>
           ) : (
             <>
-              <Button variant="text" onClick={() => navigate("/login")}>
+              <Button
+                onClick={() => navigate("/login")}
+                sx={{
+                  border: `2px solid ${DARK}`,
+                  borderRadius: 0,
+                  color: DARK,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  fontSize: "0.8rem",
+                  px: 2,
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  "&:hover": {
+                    bgcolor: "#FFFFFF",
+                    boxShadow: `3px 3px 0px ${GREEN}`,
+                    transform: "translate(-1px, -1px)",
+                  },
+                }}
+              >
                 Login
               </Button>
               <Button
-                variant="contained"
-                color="primary"
                 onClick={() => navigate("/role-select")}
+                sx={{
+                  border: `2px solid ${DARK}`,
+                  borderRadius: 0,
+                  bgcolor: GREEN,
+                  color: "#FFFFFF",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  fontSize: "0.8rem",
+                  px: 2,
+                  boxShadow: `3px 3px 0px ${DARK}`,
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  "&:hover": {
+                    bgcolor: "#164d1b",
+                    boxShadow: `4px 4px 0px ${DARK}`,
+                    transform: "translate(-1px, -1px)",
+                  },
+                }}
               >
                 Sign Up
               </Button>
@@ -219,6 +309,7 @@ export default function Navbar() {
         anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        slotProps={{ paper: { sx: { borderLeft: `3px solid ${DARK}` } } }}
       >
         <List sx={{ width: 220, pt: 4 }}>
           {links.map((link) => (
@@ -228,8 +319,21 @@ export default function Navbar() {
                 navigate(link.to);
                 setDrawerOpen(false);
               }}
+              sx={{ "&:hover": { bgcolor: "#E8F5E9" } }}
             >
-              <ListItemText primary={link.label} />
+              <ListItemText
+                primary={link.label}
+                slotProps={{
+                  primary: {
+                    sx: {
+                      fontWeight: 700,
+                      color: DARK,
+                      textTransform: "uppercase",
+                      fontSize: "0.82rem",
+                    },
+                  },
+                }}
+              />
             </ListItemButton>
           ))}
         </List>
