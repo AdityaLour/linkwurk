@@ -121,29 +121,29 @@ export const updateJobStatus = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-
+        const limit = parseInt(req.query.limit) || 50;
         const filter = { status: 'open' };
 
-        const [jobs, total] = await Promise.all([
-            Job.find(filter)
-                .populate('recruiterId', 'companyName companyLogo')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit),
-            Job.countDocuments(filter),
-        ]);
+        if (req.query.location) {
+            filter.location = { $regex: req.query.location, $options: 'i' };
+        }
+        if (req.query.experienceRequired) {
+            filter.experienceRequired = req.query.experienceRequired;
+        }
+        if (req.query.skills) {
+            const skillsArray = req.query.skills.split(',').filter(Boolean);
+            if (skillsArray.length > 0) filter.skillsRequired = { $in: skillsArray };
+        }
+        if (req.query.salaryMin) {
+            filter.salaryMax = { $gte: Number(req.query.salaryMin) };
+        }
 
-        res.status(200).json({
-            jobs,
-            pagination: {
-                currentPage: page,
-                totalPages: Math.ceil(total / limit),
-                totalJobs: total,
-            },
-        });
+        const jobs = await Job.find(filter)
+            .populate('recruiterId', 'companyName companyLogo')
+            .sort({ createdAt: -1 })
+            .limit(limit);
+
+        res.status(200).json({ jobs, totalJobs: jobs.length });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
     }

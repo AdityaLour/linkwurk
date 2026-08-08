@@ -7,7 +7,6 @@ export const toggleSaveJob = async (req, res) => {
         const { jobId } = req.body;
 
         const existing = await SavedJob.findOne({ candidateId: candidate._id, jobId });
-
         if (existing) {
             await existing.deleteOne();
             return res.status(200).json({ saved: false, message: 'Job removed from saved list' });
@@ -27,7 +26,7 @@ export const getSavedJobs = async (req, res) => {
         const saved = await SavedJob.find({ candidateId: candidate._id })
             .populate({
                 path: 'jobId',
-                select: 'title location salaryMin salaryMax status',
+                select: 'title location salaryMin salaryMax status skillsRequired',
                 populate: { path: 'recruiterId', select: 'companyName companyLogo' },
             })
             .sort({ createdAt: -1 });
