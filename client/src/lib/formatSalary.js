@@ -1,7 +1,11 @@
 export const formatSalary = (salaryMin, salaryMax) => {
-    if (salaryMax === 0) return 'Unpaid';
-    if (salaryMin == null && salaryMax == null) return 'Salary not disclosed';
-    if (salaryMin != null && salaryMax != null) return `₹${salaryMin.toLocaleString()} - ₹${salaryMax.toLocaleString()}`;
-    if (salaryMin != null) return `From ₹${salaryMin.toLocaleString()}`;
-    return `Up to ₹${salaryMax.toLocaleString()}`;
+    const isEmpty = (v) => v === null || v === undefined || v === '' || Number.isNaN(v);
+    const min = isEmpty(salaryMin) ? null : Number(salaryMin);
+    const max = isEmpty(salaryMax) ? null : Number(salaryMax);
+
+    if (max === 0) return 'Unpaid';
+    if (min === null && max === null) return 'Salary not disclosed';
+    if (min !== null && max !== null) return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
+    if (min !== null) return `From ₹${min.toLocaleString()}`;
+    return `Up to ₹${max.toLocaleString()}`;
 };
