@@ -15,6 +15,9 @@ import RecruiterJobsPage from "@/pages/recruiter/RecruiterJobsPage";
 import JobFormPage from "@/pages/recruiter/JobFormPage";
 import ApplicantsPage from "@/pages/recruiter/ApplicantsPage";
 import InterviewsPage from "@/pages/recruiter/InterviewsPage";
+import MyApplicationsPage from "@/pages/candidate/MyApplicationsPage";
+import SavedJobsPage from "@/pages/candidate/SavedJobsPage";
+import CandidateInterviewsPage from "@/pages/candidate/CandidateInterviewsPage";
 
 function App() {
   return (
@@ -24,7 +27,36 @@ function App() {
         <Route path="/signUp" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/role-select" element={<RoleSelectPage />} />
-
+        <Route
+          path="/applications"
+          element={
+            <ProtectedRoute allowedRole="candidate">
+              <MainLayout>
+                <MyApplicationsPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/saved-jobs"
+          element={
+            <ProtectedRoute allowedRole="candidate">
+              <MainLayout>
+                <SavedJobsPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/candidate/interviews"
+          element={
+            <ProtectedRoute allowedRole="candidate">
+              <MainLayout>
+                <CandidateInterviewsPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/jobs"
           element={

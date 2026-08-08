@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -12,80 +12,95 @@ import WorkIcon from "@mui/icons-material/Work";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import EventIcon from "@mui/icons-material/Event";
 import JobCard from "@/features/jobs/components/JobCard";
-import ApplicationStageTracker from "./ApplicationStageTracker";
+import ApplicationStatusCarousel from "./ApplicationStatusCarousel";
 import useCountUp from "@/hooks/useCountUp";
 import { getRecommendedJobs } from "@/features/jobs/api/jobsApi";
 import { getMyApplications } from "@/features/applications/api/applicationsApi";
 import { getSavedJobs } from "@/features/jobs/api/savedJobsApi";
 import { getMyInterviewsAsCandidate } from "@/features/interviews/api/interviewsApi";
 import { getMyCandidateProfile } from "../api/candidatesApi";
-import LinkWurkButton from "@/components/Button";
 
-const ACTIVE_STATUSES = [
-  "Applied",
-  "Under Review",
-  "Shortlisted",
-  "Interview Scheduled",
-];
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
+const BORDER = `3px solid ${DARK}`;
+const SHADOW = `5px 5px 0px ${GREEN}`;
 
-function StatCard({ icon, label, value, loading, delay }) {
+function StatCard({ icon, label, value, loading, delay, onClick }) {
   const count = useCountUp(value, { duration: 900, delay });
-  if (loading) return <Skeleton variant="rounded" height={90} />;
+  const [punch, setPunch] = useState(false);
+  const prevCount = useRef(0);
+
+  useEffect(() => {
+    if (count === value && value > 0 && prevCount.current !== value) {
+      setPunch(true);
+      const t = setTimeout(() => setPunch(false), 300);
+      prevCount.current = value;
+      return () => clearTimeout(t);
+    }
+  }, [count, value]);
+
+  if (loading)
+    return (
+      <Skeleton variant="rectangular" height={116} sx={{ border: BORDER }} />
+    );
   return (
     <Box
+      onClick={onClick}
       sx={{
-        border: "1px solid",
-        borderColor: "divider",
-        borderRadius: 2,
+        border: BORDER,
+        boxShadow: SHADOW,
+        bgcolor: "#FFFFFF",
         p: 2.5,
-        bgcolor: "background.paper",
+        cursor: onClick ? "pointer" : "default",
         display: "flex",
         alignItems: "center",
         gap: 2,
-        opacity: 0,
-        animation: "fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards",
-        animationDelay: `${delay}ms`,
-        transition: "border-color 0.25s ease",
-        "&:hover": { borderColor: "secondary.main" },
-        "&:hover .stat-icon": {
-          bgcolor: "secondary.main",
-          color: "primary.contrastText",
-          transform: "scale(1.08)",
-        },
-        "@keyframes fadeUp": {
-          from: { opacity: 0, transform: "translateY(10px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
-        },
+        transition: "transform 0.15s ease, box-shadow 0.15s ease",
+        "&:hover": onClick
+          ? {
+              transform: "translate(-2px, -2px)",
+              boxShadow: `7px 7px 0px ${GREEN}`,
+            }
+          : {},
       }}
     >
       <Box
-        className="stat-icon"
         sx={{
           width: 40,
           height: 40,
-          borderRadius: "50%",
-          bgcolor: "action.hover",
+          border: `2px solid ${DARK}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "primary.main",
-          transition: "all 0.25s ease",
+          color: DARK,
         }}
       >
         {icon}
       </Box>
       <Box>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          sx={{
+            fontSize: "0.75rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.4px",
+            color: DARK,
+          }}
+        >
           {label}
         </Typography>
         <Typography
           sx={{
             fontFamily: '"IBM Plex Mono", monospace',
-            fontSize: "1.6rem",
-            fontWeight: 500,
+            fontSize: "1.7rem",
+            fontWeight: 600,
+            color: GREEN,
+            display: "inline-block",
+            transform: punch ? "scale(1.15)" : "scale(1)",
+            transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          {count}
+          {String(count).padStart(2, "0")}
         </Typography>
       </Box>
     </Box>
@@ -142,103 +157,107 @@ export default function CandidateHomePage() {
     }
   }, [loading, profileCompletion]);
 
-  const activeApplication = applications.find((a) =>
-    ACTIVE_STATUSES.includes(a.status),
-  );
-
   return (
-    <Box>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        backgroundImage:
+          "radial-gradient(rgba(27,94,32,0.28) 1.5px, transparent 1.5px)",
+        backgroundSize: "24px 24px",
+        minHeight: "100%",
+      }}
+    >
       <Box
-        sx={{
-          px: { xs: 3, md: 5 },
-          py: { xs: 6, md: 9 },
-          position: "relative",
-          overflow: "hidden",
-          textAlign: "center",
-        }}
+        sx={{ px: { xs: 3, md: 5 }, py: { xs: 5, md: 8 }, textAlign: "center" }}
       >
-        <Box
-          sx={{
-            position: "absolute",
-            top: -80,
-            left: "15%",
-            width: 220,
-            height: 220,
-            borderRadius: "50%",
-            bgcolor: "secondary.main",
-            opacity: 0.14,
-            filter: "blur(60px)",
-            pointerEvents: "none",
-            animation: "float1 9s ease-in-out infinite",
-            "@keyframes float1": {
-              "0%,100%": { transform: "translate(0,0)" },
-              "50%": { transform: "translate(30px,-20px)" },
-            },
-          }}
-        />
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: -90,
-            right: "12%",
-            width: 260,
-            height: 260,
-            borderRadius: "50%",
-            bgcolor: "primary.main",
-            opacity: 0.08,
-            filter: "blur(70px)",
-            pointerEvents: "none",
-            animation: "float2 11s ease-in-out infinite",
-            "@keyframes float2": {
-              "0%,100%": { transform: "translate(0,0)" },
-              "50%": { transform: "translate(-30px,25px)" },
-            },
-          }}
-        />
         <Typography
-          variant="h3"
-          sx={{ position: "relative", maxWidth: 560, mx: "auto", mb: 1.5 }}
+          sx={{
+            fontFamily: '"Space Grotesk", sans-serif',
+            fontWeight: 800,
+            fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.6rem" },
+            color: DARK,
+            maxWidth: 600,
+            mx: "auto",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+          }}
         >
           Where skills meet the right role
         </Typography>
-        <Typography color="text.secondary" sx={{ position: "relative", mb: 3 }}>
+        <Typography
+          sx={{
+            color: "#2F5A33",
+            fontWeight: 500,
+            mt: 1.5,
+            mb: 3,
+            fontSize: { xs: "0.95rem", sm: "1.05rem" },
+          }}
+        >
           Browse open roles matched to your profile.
         </Typography>
-
-        <LinkWurkButton
-          variant="contained"
-          color="primary"
-          size="large"
+        <Button
           onClick={() => navigate("/jobs")}
+          sx={{
+            border: BORDER,
+            borderRadius: 0,
+            boxShadow: `5px 5px 0px ${DARK}`,
+            bgcolor: GREEN,
+            color: "#FFFFFF",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            px: 3,
+            py: 1.2,
+            transition: "transform 0.15s ease, box-shadow 0.15s ease",
+            "&:hover": {
+              bgcolor: "#164d1b",
+              transform: "translate(-2px, -2px)",
+              boxShadow: `7px 7px 0px ${DARK}`,
+            },
+            "&:active": {
+              transform: "translate(3px, 3px)",
+              boxShadow: `2px 2px 0px ${DARK}`,
+            },
+          }}
         >
           Browse jobs
-        </LinkWurkButton>
+        </Button>
       </Box>
 
       <Box sx={{ px: { xs: 3, md: 5 }, pb: 3, maxWidth: 1100, mx: "auto" }}>
         {loading ? (
-          <Skeleton variant="rounded" height={64} />
+          <Skeleton variant="rectangular" height={64} sx={{ border: BORDER }} />
         ) : (
           profileCompletion < 100 && (
             <Box
               sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 2,
+                border: BORDER,
+                boxShadow: SHADOW,
+                bgcolor: "#FFFFFF",
                 p: 2.5,
-                bgcolor: "background.paper",
               }}
             >
               <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mb: 1,
+                  flexWrap: "wrap",
+                  gap: 1,
+                }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography
+                  sx={{ fontWeight: 700, color: DARK, fontSize: "0.9rem" }}
+                >
                   Profile {profileCompletion}% complete
                 </Typography>
                 <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ cursor: "pointer" }}
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                    color: GREEN,
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
                   onClick={() => navigate("/candidate/onboarding/skills")}
                 >
                   Complete your profile
@@ -247,11 +266,13 @@ export default function CandidateHomePage() {
               <LinearProgress
                 variant="determinate"
                 value={barValue}
-                color="secondary"
                 sx={{
-                  height: 6,
-                  borderRadius: 3,
+                  height: 8,
+                  borderRadius: 0,
+                  border: `2px solid ${DARK}`,
+                  bgcolor: "#E8F5E9",
                   "& .MuiLinearProgress-bar": {
+                    bgcolor: "#E3A008",
                     transition: "transform 1s cubic-bezier(0.4,0,0.2,1)",
                   },
                 }}
@@ -263,7 +284,7 @@ export default function CandidateHomePage() {
 
       <Grid
         container
-        spacing={2}
+        spacing={2.5}
         sx={{ px: { xs: 3, md: 5 }, pb: 4, maxWidth: 1100, mx: "auto" }}
       >
         <Grid item xs={12} sm={4}>
@@ -273,6 +294,7 @@ export default function CandidateHomePage() {
             value={applications.length}
             loading={loading}
             delay={0}
+            onClick={() => navigate("/applications")}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -282,6 +304,7 @@ export default function CandidateHomePage() {
             value={savedJobs.length}
             loading={loading}
             delay={100}
+            onClick={() => navigate("/saved-jobs")}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -291,23 +314,33 @@ export default function CandidateHomePage() {
             value={interviews.length}
             loading={loading}
             delay={200}
+            onClick={() => navigate("/candidate/interviews")}
           />
         </Grid>
       </Grid>
 
       <Box sx={{ px: { xs: 3, md: 5 }, pb: 5, maxWidth: 1100, mx: "auto" }}>
         <Typography
-          variant="overline"
-          color="text.secondary"
-          sx={{ mb: 2, display: "block" }}
+          sx={{
+            fontSize: "1.1rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.3px",
+            color: DARK,
+            mb: 2.5,
+          }}
         >
           Recommended for you
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
-                <Skeleton variant="rounded" height={180} />
+                <Skeleton
+                  variant="rectangular"
+                  height={180}
+                  sx={{ border: BORDER }}
+                />
               </Grid>
             ))
           ) : recommendedJobs.length > 0 ? (
@@ -318,7 +351,7 @@ export default function CandidateHomePage() {
             ))
           ) : (
             <Grid item xs={12}>
-              <Typography color="text.secondary">
+              <Typography sx={{ color: "#2F5A33" }}>
                 Add skills to your profile to see recommendations.
               </Typography>
             </Grid>
@@ -326,30 +359,9 @@ export default function CandidateHomePage() {
         </Grid>
       </Box>
 
-      {!loading && activeApplication && (
+      {!loading && (
         <Box sx={{ px: { xs: 3, md: 5 }, pb: 6, maxWidth: 1100, mx: "auto" }}>
-          <Typography
-            variant="overline"
-            color="text.secondary"
-            sx={{ mb: 2, display: "block" }}
-          >
-            Continue where you left off
-          </Typography>
-          <Box
-            sx={{
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 2,
-              p: 3,
-              bgcolor: "background.paper",
-            }}
-          >
-            <Typography sx={{ fontWeight: 600, mb: 2 }}>
-              {activeApplication.jobId?.title} —{" "}
-              {activeApplication.jobId?.recruiterId?.companyName}
-            </Typography>
-            <ApplicationStageTracker currentStatus={activeApplication.status} />
-          </Box>
+          <ApplicationStatusCarousel applications={applications} />
         </Box>
       )}
     </Box>

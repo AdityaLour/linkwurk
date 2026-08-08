@@ -93,8 +93,14 @@ export const getMyInterviewsAsCandidate = async (req, res) => {
         const applicationIds = applications.map((a) => a._id);
 
         const interviews = await Interview.find({ applicationId: { $in: applicationIds } })
-            .populate({ path: 'applicationId', populate: { path: 'jobId', select: 'title' } })
-            .sort({ scheduledAt: 1 });
+            .populate({
+                path: 'applicationId',
+                populate: {
+                    path: 'jobId',
+                    select: 'title recruiterId',
+                    populate: { path: 'recruiterId', select: 'companyName' },
+                },
+            }).sort({ scheduledAt: 1 });
 
         res.status(200).json({ interviews });
     } catch (err) {

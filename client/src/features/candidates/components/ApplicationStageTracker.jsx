@@ -1,5 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
 const STAGES = [
   "Applied",
   "Under Review",
@@ -31,10 +33,8 @@ export default function ApplicationStageTracker({ currentStatus }) {
                 sx={{
                   width: isActive ? 16 : 12,
                   height: isActive ? 16 : 12,
-                  borderRadius: "50%",
-                  bgcolor: isPast || isActive ? "success.main" : "transparent",
-                  border: "2px solid",
-                  borderColor: isActive ? "primary.main" : "success.main",
+                  bgcolor: isPast || isActive ? "#3D8361" : "transparent",
+                  border: `2.5px solid ${DARK}`,
                 }}
               />
               {!isLast && (
@@ -42,7 +42,7 @@ export default function ApplicationStageTracker({ currentStatus }) {
                   sx={{
                     width: 2,
                     height: 32,
-                    bgcolor: isPast ? "success.main" : "divider",
+                    bgcolor: isPast ? GREEN : "#C8DFC9",
                   }}
                 />
               )}
@@ -51,8 +51,8 @@ export default function ApplicationStageTracker({ currentStatus }) {
               sx={{
                 fontFamily: '"IBM Plex Mono", monospace',
                 fontSize: "0.9rem",
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? "text.primary" : "text.secondary",
+                fontWeight: isActive ? 700 : 400,
+                color: isActive ? DARK : "#7A7267",
                 pt: "2px",
               }}
             >

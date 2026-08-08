@@ -5,12 +5,15 @@ import {
   Box,
   Typography,
   Avatar,
-  Chip,
   Stack,
 } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import { formatSalary } from "@/lib/formatSalary";
+
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
+const BORDER = `3px solid ${DARK}`;
+const SHADOW = `5px 5px 0px ${GREEN}`;
 
 export default function JobCard({ job }) {
   const navigate = useNavigate();
@@ -20,73 +23,90 @@ export default function JobCard({ job }) {
     <Card
       elevation={0}
       sx={{
-        border: "1px solid",
-        borderColor: "divider",
-        borderRadius: 2,
-        transition:
-          "transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease",
+        border: BORDER,
+        borderRadius: 0,
+        boxShadow: SHADOW,
+        bgcolor: "#FFFFFF",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease",
         "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 10px 24px rgba(27,94,32,0.14)",
-          borderColor: "primary.main",
+          transform: "translate(-2px, -2px)",
+          boxShadow: `7px 7px 0px ${GREEN}`,
         },
-        "&:hover .job-arrow": { opacity: 1, transform: "translateX(0)" },
-        "&:hover .job-avatar": { transform: "scale(1.06)" },
       }}
     >
       <CardActionArea onClick={() => navigate(`/jobs/${job._id}`)}>
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: 2.5 }}>
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              mb: 2,
+              mb: 1.5,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
               <Avatar
-                className="job-avatar"
+                variant="square"
                 src={recruiter.companyLogo}
                 sx={{
-                  width: 40,
-                  height: 40,
-                  bgcolor: "secondary.main",
-                  transition: "transform 0.25s ease",
+                  width: 38,
+                  height: 38,
+                  bgcolor: "#66BB6A",
+                  color: DARK,
+                  border: `2px solid ${DARK}`,
+                  fontWeight: 700,
                 }}
               >
                 {recruiter.companyName?.[0] || "?"}
               </Avatar>
               <Box>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                <Typography
+                  sx={{ fontSize: "0.82rem", fontWeight: 700, color: DARK }}
+                >
                   {recruiter.companyName || "Company"}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography sx={{ fontSize: "0.72rem", color: "#7A7267" }}>
                   {job.location}
                 </Typography>
               </Box>
             </Box>
-            <ArrowForwardIcon
-              className="job-arrow"
-              sx={{
-                fontSize: 18,
-                color: "primary.main",
-                opacity: 0,
-                transform: "translateX(-6px)",
-                transition: "opacity 0.25s ease, transform 0.25s ease",
-              }}
-            />
+            {job.matchPercent != null && (
+              <Box
+                sx={{
+                  bgcolor: "#E3A008",
+                  color: DARK,
+                  border: `2px solid ${DARK}`,
+                  fontSize: "0.68rem",
+                  fontWeight: 700,
+                  px: 0.9,
+                  py: 0.3,
+                  transform: "rotate(4deg)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {job.matchPercent}% match
+              </Box>
+            )}
           </Box>
 
-          <Typography variant="h6" sx={{ mb: 1, fontSize: "1.1rem" }}>
+          <Typography
+            sx={{
+              fontFamily: '"Space Grotesk", sans-serif',
+              fontWeight: 700,
+              fontSize: "1.05rem",
+              color: DARK,
+              mb: 1,
+            }}
+          >
             {job.title}
           </Typography>
 
           <Typography
-            variant="body2"
             sx={{
               fontFamily: '"IBM Plex Mono", monospace',
-              color: "success.main",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              color: GREEN,
               mb: 1.5,
             }}
           >
@@ -95,16 +115,19 @@ export default function JobCard({ job }) {
 
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             {(job.skillsRequired || []).slice(0, 3).map((skill) => (
-              <Chip
+              <Box
                 key={skill}
-                label={skill}
-                size="small"
-                variant="outlined"
                 sx={{
-                  transition: "background-color 0.2s ease",
-                  "&:hover": { bgcolor: "action.hover" },
+                  border: `2px solid ${DARK}`,
+                  fontSize: "0.7rem",
+                  fontWeight: 600,
+                  color: DARK,
+                  px: 0.9,
+                  py: 0.2,
                 }}
-              />
+              >
+                {skill}
+              </Box>
             ))}
           </Stack>
         </CardContent>
