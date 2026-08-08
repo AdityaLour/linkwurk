@@ -85,6 +85,70 @@ function StatCard({ label, value, loading, delay, onClick }) {
   );
 }
 
+function NextInterviewBanner({ interview, onClick }) {
+  if (!interview) return null;
+  const application = interview.applicationId || {};
+  const candidate = application.candidateId || {};
+  const candidateUser = candidate.userId || {};
+  const job = application.jobId || {};
+
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        border: BORDER,
+        boxShadow: SHADOW,
+        bgcolor: "#FFFFFF",
+        p: 2.5,
+        cursor: "pointer",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 1.5,
+        transition: "transform 0.15s ease, box-shadow 0.15s ease",
+        "&:hover": {
+          transform: "translate(-2px, -2px)",
+          boxShadow: "7px 7px 0px #1B5E20",
+        },
+      }}
+    >
+      <Box>
+        <Typography
+          sx={{
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.4px",
+            color: "#7A7267",
+            mb: 0.3,
+          }}
+        >
+          Next interview
+        </Typography>
+        <Typography sx={{ fontWeight: 700, color: "#14431A" }}>
+          {candidateUser.firstName} {candidateUser.lastName} &mdash; {job.title}
+        </Typography>
+      </Box>
+      <Typography
+        sx={{
+          fontFamily: '"IBM Plex Mono", monospace',
+          fontSize: "0.85rem",
+          fontWeight: 600,
+          color: "#1B5E20",
+        }}
+      >
+        {new Date(interview.scheduledAt).toLocaleString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </Typography>
+    </Box>
+  );
+}
+
 export default function RecruiterHomePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -113,6 +177,13 @@ export default function RecruiterHomePage() {
   };
 
   const activeJobs = jobs.filter((j) => j.status === "open").length;
+
+  const now = new Date();
+  const nextInterview =
+    interviews
+      .filter((i) => i.status === "Scheduled" && new Date(i.scheduledAt) > now)
+      .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))[0] ||
+    null;
 
   return (
     <Box
@@ -152,59 +223,99 @@ export default function RecruiterHomePage() {
         >
           Manage your listings and review applicants in one place.
         </Typography>
-        <LinkWurkButton
-          variant="contained"
-          size="large"
-          onClick={() => navigate("/recruiter/jobs/new")}
+        <Box
           sx={{
-            border: BORDER,
-            borderRadius: 0,
-            boxShadow: "5px 5px 0px #14431A",
-            bgcolor: "#1B5E20",
-            color: "#FFFFFF",
-            textTransform: "uppercase",
-            fontWeight: 700,
-            px: 3,
-            transition: "transform 0.15s ease, box-shadow 0.15s ease",
-            "&:hover": {
-              bgcolor: "#164d1b",
-              transform: "translate(-2px, -2px)",
-              boxShadow: "7px 7px 0px #14431A",
-            },
-            "&:active": {
-              transform: "translate(3px, 3px)",
-              boxShadow: "2px 2px 0px #14431A",
-            },
+            display: "flex",
+            gap: 2,
+            justifyContent: "center",
+            flexWrap: "wrap",
           }}
         >
-          Post a job
-        </LinkWurkButton>
+          <LinkWurkButton
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/recruiter/jobs/new")}
+            sx={{
+              border: BORDER,
+              borderRadius: 0,
+              boxShadow: "5px 5px 0px #14431A",
+              bgcolor: "#1B5E20",
+              color: "#FFFFFF",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              px: 3,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              "&:hover": {
+                bgcolor: "#164d1b",
+                transform: "translate(-2px, -2px)",
+                boxShadow: "7px 7px 0px #14431A",
+              },
+              "&:active": {
+                transform: "translate(3px, 3px)",
+                boxShadow: "2px 2px 0px #14431A",
+              },
+            }}
+          >
+            Post a job
+          </LinkWurkButton>
+          <Button
+            onClick={() => navigate("/recruiter/jobs")}
+            sx={{
+              border: BORDER,
+              borderRadius: 0,
+              color: "#14431A",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              px: 3,
+              bgcolor: "#FFFFFF",
+              boxShadow: "5px 5px 0px #1B5E20",
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              "&:hover": {
+                transform: "translate(-2px, -2px)",
+                boxShadow: "7px 7px 0px #1B5E20",
+              },
+              "&:active": {
+                transform: "translate(3px, 3px)",
+                boxShadow: "2px 2px 0px #1B5E20",
+              },
+            }}
+          >
+            View my jobs
+          </Button>
+        </Box>
       </Box>
 
-      <Grid
-        container
-        spacing={2.5}
-        sx={{ px: { xs: 3, md: 5 }, pb: 4, maxWidth: 1100, mx: "auto" }}
-      >
-        <Grid item xs={12} sm={6}>
-          <StatCard
-            label="Active jobs"
-            value={activeJobs}
-            loading={loading}
-            delay={0}
-            onClick={() => navigate("/recruiter/jobs")}
-          />
+      <Box sx={{ px: { xs: 3, md: 5 }, pb: 4, maxWidth: 1100, mx: "auto" }}>
+        <Grid container spacing={2.5}>
+          <Grid item xs={12} sm={6}>
+            <StatCard
+              label="Active jobs"
+              value={activeJobs}
+              loading={loading}
+              delay={0}
+              onClick={() => navigate("/recruiter/jobs")}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <StatCard
+              label="Interviews"
+              value={interviews.length}
+              loading={loading}
+              delay={100}
+              onClick={() => navigate("/recruiter/interviews")}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <StatCard
-            label="Interviews"
-            value={interviews.length}
-            loading={loading}
-            delay={100}
-            onClick={() => navigate("/recruiter/interviews")}
-          />
-        </Grid>
-      </Grid>
+
+        {!loading && (
+          <Box sx={{ mt: 2.5 }}>
+            <NextInterviewBanner
+              interview={nextInterview}
+              onClick={() => navigate("/recruiter/interviews")}
+            />
+          </Box>
+        )}
+      </Box>
 
       <Box sx={{ px: { xs: 3, md: 5 }, pb: 6, maxWidth: 1100, mx: "auto" }}>
         <Box
