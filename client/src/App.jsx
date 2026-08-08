@@ -8,6 +8,13 @@ import CompanyBrandingPage from "@/pages/recruiter/CompanyBrandingPage";
 import CandidateOnboardingSkillsPage from "@/pages/candidate/CandidateOnboardingSkillsPage";
 import CandidateOnboardingResumePage from "@/pages/candidate/CandidateOnboardingResumePage";
 import HomeRouter from "@/pages/HomeRouter";
+import JobsListPage from "@/pages/JobsListPage";
+import JobDetailPage from "@/pages/JobDetailPage";
+import MainLayout from "@/components/MainLayout";
+import RecruiterJobsPage from "@/pages/recruiter/RecruiterJobsPage";
+import JobFormPage from "@/pages/recruiter/JobFormPage";
+import ApplicantsPage from "@/pages/recruiter/ApplicantsPage";
+import InterviewsPage from "@/pages/recruiter/InterviewsPage";
 
 function App() {
   return (
@@ -17,6 +24,24 @@ function App() {
         <Route path="/signUp" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/role-select" element={<RoleSelectPage />} />
+
+        <Route
+          path="/jobs"
+          element={
+            <MainLayout>
+              <JobsListPage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/jobs/:id"
+          element={
+            <MainLayout>
+              <JobDetailPage />
+            </MainLayout>
+          }
+        />
+
         <Route
           path="/recruiter/onboarding/company-info"
           element={
@@ -33,6 +58,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/candidate/onboarding/skills"
           element={
@@ -46,6 +72,57 @@ function App() {
           element={
             <ProtectedRoute allowedRole="candidate">
               <CandidateOnboardingResumePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recruiter/jobs"
+          element={
+            <ProtectedRoute allowedRole="recruiter">
+              <MainLayout>
+                <RecruiterJobsPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recruiter/jobs/new"
+          element={
+            <ProtectedRoute allowedRole="recruiter">
+              <MainLayout>
+                <JobFormPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recruiter/jobs/:id/edit"
+          element={
+            <ProtectedRoute allowedRole="recruiter">
+              <MainLayout>
+                <JobFormPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recruiter/jobs/:id/applicants"
+          element={
+            <ProtectedRoute allowedRole="recruiter">
+              <MainLayout>
+                <ApplicantsPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recruiter/interviews"
+          element={
+            <ProtectedRoute allowedRole="recruiter">
+              <MainLayout>
+                <InterviewsPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
