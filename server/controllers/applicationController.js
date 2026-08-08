@@ -71,7 +71,7 @@ export const getApplicantsForJob = async (req, res) => {
         const applications = await Application.find({ jobId: req.params.jobId })
             .populate({
                 path: 'candidateId',
-                select: 'profilePicture resume summary skills education',
+                select: 'profilePicture resume summary skills education certifications',
                 populate: { path: 'userId', select: 'firstName lastName email' },
             })
             .sort({ createdAt: -1 });
