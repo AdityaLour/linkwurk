@@ -2,6 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import MainLayout from "@/components/MainLayout";
 import HomePage from "./HomePage";
 import CandidateHomePage from "@/features/candidates/components/CandidateHomePage";
+import RecruiterHomePage from "@/features/recruiters/components/RecruiterHomePage";
 
 export default function HomeRouter() {
   const { user, loading } = useAuth();
@@ -15,7 +16,7 @@ export default function HomeRouter() {
       ) : user.role === "candidate" ? (
         <CandidateHomePage />
       ) : (
-        <div>Recruiter home — coming next</div>
+        <RecruiterHomePage />
       )}
     </MainLayout>
   );
