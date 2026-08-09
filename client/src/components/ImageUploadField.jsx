@@ -5,7 +5,12 @@ import CloseIcon from "@mui/icons-material/Close";
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
 
-export default function ImageUploadField({ label, file, onChange }) {
+export default function ImageUploadField({
+  label,
+  file,
+  existingUrl,
+  onChange,
+}) {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
@@ -17,6 +22,8 @@ export default function ImageUploadField({ label, file, onChange }) {
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
+
+  const displayUrl = previewUrl || existingUrl || null;
 
   return (
     <Box>
@@ -33,30 +40,32 @@ export default function ImageUploadField({ label, file, onChange }) {
         {label}
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        {previewUrl ? (
+        {displayUrl ? (
           <Box sx={{ position: "relative" }}>
             <Avatar
               variant="square"
-              src={previewUrl}
+              src={displayUrl}
               sx={{ width: 72, height: 72, border: `2.5px solid ${DARK}` }}
             />
-            <IconButton
-              size="small"
-              onClick={() => onChange(null)}
-              sx={{
-                position: "absolute",
-                top: -10,
-                right: -10,
-                bgcolor: "#FFFFFF",
-                border: `2px solid ${DARK}`,
-                borderRadius: 0,
-                width: 24,
-                height: 24,
-                "&:hover": { bgcolor: "#E8F5E9" },
-              }}
-            >
-              <CloseIcon sx={{ fontSize: 14, color: DARK }} />
-            </IconButton>
+            {previewUrl && (
+              <IconButton
+                size="small"
+                onClick={() => onChange(null)}
+                sx={{
+                  position: "absolute",
+                  top: -10,
+                  right: -10,
+                  bgcolor: "#FFFFFF",
+                  border: `2px solid ${DARK}`,
+                  borderRadius: 0,
+                  width: 24,
+                  height: 24,
+                  "&:hover": { bgcolor: "#E8F5E9" },
+                }}
+              >
+                <CloseIcon sx={{ fontSize: 14, color: DARK }} />
+              </IconButton>
+            )}
           </Box>
         ) : (
           <Avatar
@@ -81,7 +90,7 @@ export default function ImageUploadField({ label, file, onChange }) {
             "&:hover": { bgcolor: GREEN, color: "#FFFFFF" },
           }}
         >
-          {file ? "Change" : "Upload"}
+          {displayUrl ? "Change" : "Upload"}
           <input
             type="file"
             hidden

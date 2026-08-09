@@ -18,6 +18,7 @@ import InterviewsPage from "@/pages/recruiter/InterviewsPage";
 import MyApplicationsPage from "@/pages/candidate/MyApplicationsPage";
 import SavedJobsPage from "@/pages/candidate/SavedJobsPage";
 import CandidateInterviewsPage from "@/pages/candidate/CandidateInterviewsPage";
+import ProfileRouter from "@/pages/ProfileRouter";
 
 function App() {
   return (
@@ -155,6 +156,14 @@ function App() {
               <MainLayout>
                 <InterviewsPage />
               </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfileRouter />
             </ProtectedRoute>
           }
         />
