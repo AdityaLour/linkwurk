@@ -14,7 +14,40 @@ import {
   getMyRecruiterProfile,
 } from "../api/recruitersApi";
 
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
 const EMPLOYEE_RANGES = ["1-10", "11-50", "51-200", "201-500", "500+"];
+
+const fieldSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 0,
+    bgcolor: "#FFFFFF",
+    "& fieldset": { borderWidth: "2.5px", borderColor: DARK },
+    "&:hover fieldset": { borderColor: GREEN },
+    "&.Mui-focused fieldset": { borderWidth: "2.5px", borderColor: GREEN },
+  },
+  "& .MuiInputLabel-root": { color: DARK, fontWeight: 600 },
+};
+
+const primaryBtnSx = {
+  border: `2.5px solid ${DARK}`,
+  borderRadius: 0,
+  bgcolor: GREEN,
+  color: "#FFFFFF",
+  fontWeight: 700,
+  textTransform: "uppercase",
+  boxShadow: `5px 5px 0px ${DARK}`,
+  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+  "&:hover": {
+    bgcolor: "#164d1b",
+    transform: "translate(-2px, -2px)",
+    boxShadow: `7px 7px 0px ${DARK}`,
+  },
+  "&:active": {
+    transform: "translate(3px, 3px)",
+    boxShadow: `2px 2px 0px ${DARK}`,
+  },
+};
 
 export default function CompanyBasicsForm() {
   const navigate = useNavigate();
@@ -62,7 +95,9 @@ export default function CompanyBasicsForm() {
         activeStep={0}
         steps={["Company basics", "Branding"]}
       >
-        <Typography color="text.secondary">Loading your profile...</Typography>
+        <Typography sx={{ color: "#2F5A33" }}>
+          Loading your profile...
+        </Typography>
       </OnboardingLayout>
     );
   }
@@ -88,6 +123,7 @@ export default function CompanyBasicsForm() {
             value={formData.companyName}
             onChange={handleChange}
             fullWidth
+            sx={fieldSx}
           />
           <TextField
             name="website"
@@ -95,6 +131,7 @@ export default function CompanyBasicsForm() {
             value={formData.website}
             onChange={handleChange}
             fullWidth
+            sx={fieldSx}
           />
           <TextField
             name="numberOfEmployees"
@@ -103,6 +140,7 @@ export default function CompanyBasicsForm() {
             value={formData.numberOfEmployees}
             onChange={handleChange}
             fullWidth
+            sx={fieldSx}
           >
             {EMPLOYEE_RANGES.map((range) => (
               <MenuItem key={range} value={range}>
@@ -112,17 +150,15 @@ export default function CompanyBasicsForm() {
           </TextField>
           <Stack direction="row" spacing={2} sx={{ pt: 1 }}>
             <Button
-              variant="contained"
-              color="primary"
-              size="large"
               onClick={saveAndContinue}
               disabled={loading}
+              sx={primaryBtnSx}
             >
               Save & continue
             </Button>
             <Button
-              variant="text"
               onClick={() => navigate("/recruiter/onboarding/branding")}
+              sx={{ color: GREEN, fontWeight: 700, textTransform: "uppercase" }}
             >
               Skip for now
             </Button>

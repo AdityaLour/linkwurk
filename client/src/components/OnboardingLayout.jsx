@@ -1,11 +1,7 @@
-import {
-  Box,
-  Typography,
-  Stepper,
-  Step,
-  StepLabel,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Stepper, Step, StepLabel } from "@mui/material";
+
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
 
 export default function OnboardingLayout({
   children,
@@ -19,57 +15,58 @@ export default function OnboardingLayout({
       sx={{
         minHeight: "100vh",
         bgcolor: "background.default",
+        backgroundImage:
+          "radial-gradient(rgba(27,94,32,0.28) 1.5px, transparent 1.5px)",
+        backgroundSize: "24px 24px",
         py: { xs: 4, md: 8 },
         px: 3,
-        position: "relative",
-        overflow: "hidden",
       }}
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: -140,
-          left: "10%",
-          width: 300,
-          height: 300,
-          borderRadius: "50%",
-          bgcolor: "secondary.main",
-          opacity: 0.25,
-          filter: "blur(70px)",
-          pointerEvents: "none",
-          animation: "float1 9s ease-in-out infinite",
-          "@keyframes float1": {
-            "0%, 100%": { transform: "translate(0, 0)" },
-            "50%": { transform: "translate(40px, -50px)" },
-          },
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: -160,
-          right: "8%",
-          width: 340,
-          height: 340,
-          borderRadius: "50%",
-          bgcolor: "primary.main",
-          opacity: 0.18,
-          filter: "blur(80px)",
-          pointerEvents: "none",
-          animation: "float2 11s ease-in-out infinite",
-          "@keyframes float2": {
-            "0%, 100%": { transform: "translate(0, 0)" },
-            "50%": { transform: "translate(-45px, 35px)" },
-          },
-        }}
-      />
-
-      <Box sx={{ maxWidth: 560, mx: "auto", position: "relative", zIndex: 1 }}>
-        <Typography variant="h3" sx={{ mb: 4, textAlign: "center" }}>
+      <Box sx={{ maxWidth: 560, mx: "auto" }}>
+        <Typography
+          sx={{
+            fontFamily: '"Space Grotesk", sans-serif',
+            fontWeight: 800,
+            fontSize: "1.8rem",
+            color: DARK,
+            mb: 4,
+            textAlign: "center",
+          }}
+        >
           LinkWurk
         </Typography>
 
-        <Stepper activeStep={activeStep} sx={{ mb: 5 }}>
+        <Stepper
+          activeStep={activeStep}
+          sx={{
+            mb: 5,
+            "& .MuiStepIcon-root": {
+              borderRadius: 0,
+              border: `2.5px solid ${DARK}`,
+              color: "transparent",
+              "& .MuiStepIcon-text": { fill: DARK, fontWeight: 700 },
+            },
+            "& .MuiStepIcon-root.Mui-active": {
+              color: GREEN,
+              border: `2.5px solid ${DARK}`,
+              "& .MuiStepIcon-text": { fill: "#FFFFFF" },
+            },
+            "& .MuiStepIcon-root.Mui-completed": {
+              color: "#3D8361",
+              border: `2.5px solid ${DARK}`,
+              "& .MuiStepIcon-text": { fill: "#FFFFFF" },
+            },
+            "& .MuiStepConnector-line": {
+              borderColor: DARK,
+              borderTopWidth: 2,
+            },
+            "& .MuiStepLabel-label": {
+              fontWeight: 700,
+              color: DARK,
+              fontSize: "0.85rem",
+            },
+          }}
+        >
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -77,13 +74,12 @@ export default function OnboardingLayout({
           ))}
         </Stepper>
 
-        <Paper
-          elevation={0}
+        <Box
           sx={{
             p: { xs: 3, md: 5 },
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 2,
+            border: `3px solid ${DARK}`,
+            boxShadow: `6px 6px 0px ${GREEN}`,
+            bgcolor: "#FFFFFF",
             opacity: 0,
             animation: "fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
             "@keyframes fadeUp": {
@@ -92,16 +88,22 @@ export default function OnboardingLayout({
             },
           }}
         >
-          <Typography variant="h4" sx={{ mb: 1 }}>
+          <Typography
+            sx={{
+              fontFamily: '"Space Grotesk", sans-serif',
+              fontWeight: 700,
+              fontSize: "1.3rem",
+              color: DARK,
+              mb: 1,
+            }}
+          >
             {title}
           </Typography>
           {subtitle && (
-            <Typography color="text.secondary" sx={{ mb: 4 }}>
-              {subtitle}
-            </Typography>
+            <Typography sx={{ color: "#2F5A33", mb: 4 }}>{subtitle}</Typography>
           )}
           {children}
-        </Paper>
+        </Box>
       </Box>
     </Box>
   );
