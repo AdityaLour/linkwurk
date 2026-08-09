@@ -74,30 +74,31 @@ export default function JobPreviewCard({ formData }) {
               flexWrap: "wrap",
             }}
           >
-            <Typography
-              sx={{
-                fontSize: "0.88rem",
-                color: "#2F5A33",
-                wordBreak: "break-word",
-              }}
-            >
-              {formData.location?.trim() || "Location not set"}
-            </Typography>
-            {formData.isRemote && (
+            {formData.isRemote ? (
               <Box
                 sx={{
                   border: `2px solid ${DARK}`,
                   bgcolor: "#E8F5E9",
-                  fontSize: "0.62rem",
+                  fontSize: "0.7rem",
                   fontWeight: 700,
                   textTransform: "uppercase",
                   color: DARK,
-                  px: 0.7,
-                  py: 0.15,
+                  px: 0.9,
+                  py: 0.2,
                 }}
               >
                 Remote
               </Box>
+            ) : (
+              <Typography
+                sx={{
+                  fontSize: "0.88rem",
+                  color: formData.location?.trim() ? "#2F5A33" : "#A9A296",
+                  wordBreak: "break-word",
+                }}
+              >
+                {formData.location?.trim() || "Location not set"}
+              </Typography>
             )}
           </Box>
 

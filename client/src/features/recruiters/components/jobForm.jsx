@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { createJob, updateJob, getJobById } from "@/features/jobs/api/jobsApi";
 import SkillsAutocomplete from "@/features/candidates/components/SkillsAutocomplete";
+import { formatExperience } from "@/lib/formatExperience";
 
 const EXPERIENCE_OPTIONS = ["Fresher", "0-1", "1-3", "3-5", "5-10", "10+"];
 const DESCRIPTION_LIMIT = 2000;
@@ -23,6 +24,7 @@ const BORDER = "3px solid #14431A";
 const emptyForm = {
   title: "",
   location: "",
+  isRemote: false,
   salaryMin: "",
   salaryMax: "",
   skillsRequired: [],
@@ -131,7 +133,8 @@ export default function JobForm({ jobId, onFormDataChange }) {
           const j = res.data.job;
           setFormData({
             title: j.title || "",
-            location: j.location || "",
+            location: j.isRemote ? "" : j.location || "",
+            isRemote: j.isRemote || false,
             salaryMin: j.salaryMin ?? "",
             salaryMax: j.salaryMax === 0 ? "" : (j.salaryMax ?? ""),
             skillsRequired: j.skillsRequired || [],
@@ -182,6 +185,10 @@ export default function JobForm({ jobId, onFormDataChange }) {
     e.preventDefault();
     setError("");
 
+    if (!formData.isRemote && !formData.location.trim()) {
+      setError("Please enter a location, or mark this as a remote position");
+      return;
+    }
     if (!formData.numberOfOpenings || Number(formData.numberOfOpenings) < 1) {
       setError("Number of openings must be at least 1");
       return;
@@ -211,6 +218,7 @@ export default function JobForm({ jobId, onFormDataChange }) {
     try {
       const payload = {
         ...formData,
+        location: formData.isRemote ? "Remote" : formData.location,
         salaryMin: formData.isUnpaid ? 0 : Number(formData.salaryMin),
         salaryMax: formData.isUnpaid ? 0 : Number(formData.salaryMax),
         numberOfOpenings: Number(formData.numberOfOpenings) || 1,
@@ -260,15 +268,37 @@ export default function JobForm({ jobId, onFormDataChange }) {
           autoComplete="off"
           sx={[fieldSx, noAutofillHighlight]}
         />
+
         <TextField
           name="location"
           label="Location"
-          value={formData.location}
+          value={formData.isRemote ? "" : formData.location}
           onChange={handleChange}
-          required
+          required={!formData.isRemote}
+          disabled={formData.isRemote}
           fullWidth
           autoComplete="off"
+          helperText={
+            formData.isRemote ? "Not needed for remote positions" : " "
+          }
           sx={[fieldSx, noAutofillHighlight]}
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={formData.isRemote}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  isRemote: e.target.checked,
+                  location: e.target.checked ? "" : formData.location,
+                })
+              }
+              sx={{ color: "#14431A", "&.Mui-checked": { color: "#1B5E20" } }}
+            />
+          }
+          label="This is a remote position"
         />
 
         <FormControlLabel
@@ -315,16 +345,6 @@ export default function JobForm({ jobId, onFormDataChange }) {
           />
         </Stack>
 
-        <Box>
-          <Typography sx={sectionLabelSx}>Skills required</Typography>
-          <SkillsAutocomplete
-            value={formData.skillsRequired}
-            onChange={(newValue) =>
-              setFormData({ ...formData, skillsRequired: newValue })
-            }
-          />
-        </Box>
-
         <TextField
           name="experienceRequired"
           label="Experience required"
@@ -336,10 +356,34 @@ export default function JobForm({ jobId, onFormDataChange }) {
         >
           {EXPERIENCE_OPTIONS.map((opt) => (
             <MenuItem key={opt} value={opt}>
-              {opt}
+              {formatExperience(opt)}
             </MenuItem>
           ))}
         </TextField>
+
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={sectionLabelSx}>Number of openings</Typography>
+          <TextField
+            name="numberOfOpenings"
+            type="number"
+            value={formData.numberOfOpenings}
+            onChange={handleOpeningsChange}
+            fullWidth
+            inputProps={{ min: 1 }}
+            helperText="Must be at least 1"
+            sx={fieldSx}
+          />
+        </Box>
+
+        <Box>
+          <Typography sx={sectionLabelSx}>Skills required</Typography>
+          <SkillsAutocomplete
+            value={formData.skillsRequired}
+            onChange={(newValue) =>
+              setFormData({ ...formData, skillsRequired: newValue })
+            }
+          />
+        </Box>
 
         <TextField
           name="description"
@@ -356,38 +400,23 @@ export default function JobForm({ jobId, onFormDataChange }) {
           sx={fieldSx}
         />
 
-        <Stack direction="row" spacing={2}>
-          <Box sx={{ width: "100%" }}>
-            <Typography sx={sectionLabelSx}>Number of openings</Typography>
-            <TextField
-              name="numberOfOpenings"
-              type="number"
-              value={formData.numberOfOpenings}
-              onChange={handleOpeningsChange}
-              fullWidth
-              inputProps={{ min: 1 }}
-              helperText="Must be at least 1"
-              sx={fieldSx}
-            />
-          </Box>
-          <Box sx={{ width: "100%" }}>
-            <Typography sx={sectionLabelSx}>Application deadline</Typography>
-            <TextField
-              name="lastApplyDate"
-              type="date"
-              value={formData.lastApplyDate}
-              onChange={handleChange}
-              fullWidth
-              inputProps={{
-                min: today,
-                "data-has-value": formData.lastApplyDate ? "true" : "false",
-              }}
-              error={isPastDate}
-              helperText={isPastDate ? "Cannot be in the past" : " "}
-              sx={[fieldSx, dateVisibilitySx]}
-            />
-          </Box>
-        </Stack>
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={sectionLabelSx}>Application deadline</Typography>
+          <TextField
+            name="lastApplyDate"
+            type="date"
+            value={formData.lastApplyDate}
+            onChange={handleChange}
+            fullWidth
+            inputProps={{
+              min: today,
+              "data-has-value": formData.lastApplyDate ? "true" : "false",
+            }}
+            error={isPastDate}
+            helperText={isPastDate ? "Cannot be in the past" : " "}
+            sx={[fieldSx, dateVisibilitySx]}
+          />
+        </Box>
 
         <Box>
           <Typography sx={sectionLabelSx}>

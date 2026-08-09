@@ -3,11 +3,14 @@ import { Box, Typography, Skeleton, Alert } from "@mui/material";
 import JobFilters from "@/features/jobs/components/JobFilters";
 import JobListRow from "@/features/jobs/components/JobListRow";
 import { getAllJobs } from "@/features/jobs/api/jobsApi";
+import { getSavedJobs, toggleSaveJob } from "@/features/jobs/api/savedJobsApi";
+import { useAuth } from "@/context/AuthContext";
 
 const DARK = "#14431A";
 const BORDER = `3px solid ${DARK}`;
 
 export default function JobsListPage() {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +19,9 @@ export default function JobsListPage() {
     experienceRequired: "",
     skills: [],
     salaryMin: "",
+    isRemote: false,
   });
+  const [savedJobIds, setSavedJobIds] = useState(new Set());
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -31,11 +36,30 @@ export default function JobsListPage() {
     }
   };
 
-  // debounce location typing so it doesn't refetch on every keystroke; other filters refetch immediately
   useEffect(() => {
     const t = setTimeout(fetchJobs, 400);
     return () => clearTimeout(t);
   }, [filters]);
+
+  useEffect(() => {
+    if (user?.role === "candidate") {
+      getSavedJobs().then((res) => {
+        setSavedJobIds(
+          new Set(res.data.savedJobs.map((s) => s.jobId?._id).filter(Boolean)),
+        );
+      });
+    }
+  }, [user]);
+
+  const handleToggleSave = async (jobId) => {
+    setSavedJobIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(jobId)) next.delete(jobId);
+      else next.add(jobId);
+      return next;
+    });
+    await toggleSaveJob(jobId);
+  };
 
   return (
     <Box
@@ -121,7 +145,18 @@ export default function JobsListPage() {
                   No jobs match these filters.
                 </Typography>
               ) : (
-                jobs.map((job) => <JobListRow key={job._id} job={job} />)
+                jobs.map((job) => (
+                  <JobListRow
+                    key={job._id}
+                    job={job}
+                    isSaved={savedJobIds.has(job._id)}
+                    onToggleSave={
+                      user?.role === "candidate"
+                        ? () => handleToggleSave(job._id)
+                        : undefined
+                    }
+                  />
+                ))
               )}
             </Box>
           </Box>

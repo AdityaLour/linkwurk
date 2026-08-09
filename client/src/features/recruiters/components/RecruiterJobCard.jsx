@@ -14,6 +14,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { formatSalary } from "@/lib/formatSalary";
+import { formatExperience } from "@/lib/formatExperience";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -268,8 +269,8 @@ export default function RecruiterJobCard({ job, index = 0, onToggleStatus }) {
           </Typography>
 
           <Typography sx={{ fontSize: "0.85rem", color: "#7A7267", mb: 2 }}>
-            {job.experienceRequired} experience &middot;{" "}
-            {job.numberOfOpenings || 1} opening
+            {formatExperience(job.experienceRequired)} experience &middot;{" "}
+            {job.numberOfOpenings || 1} opening...
             {Number(job.numberOfOpenings) !== 1 ? "s" : ""}
             {job.lastApplyDate && (
               <>

@@ -12,7 +12,7 @@ export const createJob = async (req, res) => {
             });
         }
 
-        const { title, location, salaryMin, salaryMax, skillsRequired, experienceRequired, description, numberOfOpenings,
+        const { title, location, isRemote, salaryMin, salaryMax, skillsRequired, experienceRequired, description, numberOfOpenings,
             lastApplyDate, applicationType, externalApplyUrl } = req.body;
 
         if (!title || !location || !description) {
@@ -23,6 +23,7 @@ export const createJob = async (req, res) => {
             recruiterId: recruiter._id,
             title,
             location,
+            isRemote,
             salaryMin,
             salaryMax,
             skillsRequired,
@@ -60,9 +61,12 @@ export const updateJob = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized to edit this job' });
         }
 
-        const { title, location, salaryMin, salaryMax, skillsRequired, experienceRequired, description } = req.body;
+        const { title, location, isRemote, salaryMin, salaryMax, skillsRequired, experienceRequired, description,
+            numberOfOpenings, lastApplyDate, applicationType, externalApplyUrl } = req.body;
+
         if (title !== undefined) job.title = title;
         if (location !== undefined) job.location = location;
+        if (isRemote !== undefined) job.isRemote = isRemote;
         if (salaryMin !== undefined) job.salaryMin = salaryMin;
         if (salaryMax !== undefined) job.salaryMax = salaryMax;
         if (skillsRequired !== undefined) job.skillsRequired = skillsRequired;
@@ -136,6 +140,10 @@ export const getAllJobs = async (req, res) => {
         }
         if (req.query.salaryMin) {
             filter.salaryMax = { $gte: Number(req.query.salaryMin) };
+        }
+
+        if (req.query.isRemote === 'true') {
+            filter.isRemote = true;
         }
 
         const jobs = await Job.find(filter)

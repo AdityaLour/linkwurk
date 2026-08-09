@@ -6,7 +6,10 @@ import {
   Typography,
   Avatar,
   Stack,
+  IconButton,
 } from "@mui/material";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useNavigate } from "react-router-dom";
 import { formatSalary } from "@/lib/formatSalary";
 
@@ -15,9 +18,14 @@ const GREEN = "#1B5E20";
 const BORDER = `3px solid ${DARK}`;
 const SHADOW = `5px 5px 0px ${GREEN}`;
 
-export default function JobCard({ job }) {
+export default function JobCard({ job, isSaved, onToggleSave }) {
   const navigate = useNavigate();
   const recruiter = job.recruiterId || {};
+
+  const handleSaveClick = (e) => {
+    e.stopPropagation();
+    onToggleSave?.();
+  };
 
   return (
     <Card
@@ -27,6 +35,7 @@ export default function JobCard({ job }) {
         borderRadius: 0,
         boxShadow: SHADOW,
         bgcolor: "#FFFFFF",
+        position: "relative",
         transition: "transform 0.15s ease, box-shadow 0.15s ease",
         "&:hover": {
           transform: "translate(-2px, -2px)",
@@ -34,6 +43,28 @@ export default function JobCard({ job }) {
         },
       }}
     >
+      {onToggleSave && (
+        <IconButton
+          onClick={handleSaveClick}
+          size="small"
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 2,
+            border: `2px solid ${DARK}`,
+            borderRadius: 0,
+            bgcolor: "#FFFFFF",
+            "&:hover": { bgcolor: GREEN, "& svg": { color: "#FFFFFF" } },
+          }}
+        >
+          {isSaved ? (
+            <BookmarkIcon fontSize="small" sx={{ color: GREEN }} />
+          ) : (
+            <BookmarkBorderIcon fontSize="small" sx={{ color: DARK }} />
+          )}
+        </IconButton>
+      )}
       <CardActionArea onClick={() => navigate(`/jobs/${job._id}`)}>
         <CardContent sx={{ p: 2.5 }}>
           <Box
@@ -42,6 +73,7 @@ export default function JobCard({ job }) {
               alignItems: "center",
               justifyContent: "space-between",
               mb: 1.5,
+              pr: onToggleSave ? 4.5 : 0,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>

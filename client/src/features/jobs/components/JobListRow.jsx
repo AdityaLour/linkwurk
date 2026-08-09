@@ -1,13 +1,21 @@
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useNavigate } from "react-router-dom";
 import { formatSalary } from "@/lib/formatSalary";
 
 const DARK = "#14431A";
+const GREEN = "#1B5E20";
 
-export default function JobListRow({ job }) {
+export default function JobListRow({ job, isSaved, onToggleSave }) {
   const navigate = useNavigate();
   const recruiter = job.recruiterId || {};
+
+  const handleSaveClick = (e) => {
+    e.stopPropagation();
+    onToggleSave?.();
+  };
 
   return (
     <Box
@@ -54,7 +62,7 @@ export default function JobListRow({ job }) {
           fontFamily: '"IBM Plex Mono", monospace',
           fontSize: "0.9rem",
           fontWeight: 600,
-          color: "#1B5E20",
+          color: GREEN,
           minWidth: 130,
         }}
       >
@@ -84,6 +92,25 @@ export default function JobListRow({ job }) {
           </Box>
         ))}
       </Stack>
+
+      {onToggleSave && (
+        <IconButton
+          onClick={handleSaveClick}
+          size="small"
+          sx={{
+            border: `2px solid ${DARK}`,
+            borderRadius: 0,
+            flexShrink: 0,
+            "&:hover": { bgcolor: GREEN, "& svg": { color: "#FFFFFF" } },
+          }}
+        >
+          {isSaved ? (
+            <BookmarkIcon fontSize="small" sx={{ color: GREEN }} />
+          ) : (
+            <BookmarkBorderIcon fontSize="small" sx={{ color: DARK }} />
+          )}
+        </IconButton>
+      )}
 
       <ArrowForwardIcon
         className="row-arrow"

@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Avatar,
-  Stack,
   Skeleton,
   Alert,
   Divider,
@@ -12,6 +11,7 @@ import {
 import { getJobById } from "@/features/jobs/api/jobsApi";
 import ApplySection from "@/features/applications/components/ApplySection";
 import { formatSalary } from "@/lib/formatSalary";
+import { formatExperience } from "@/lib/formatExperience";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -130,70 +130,129 @@ export default function JobDetailPage() {
           >
             {job.title}
           </Typography>
-          <Typography sx={{ color: "#2F5A33", mb: 1 }}>
-            {job.location}
-          </Typography>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 1,
+              flexWrap: "wrap",
+            }}
+          >
+            <Typography sx={{ color: "#2F5A33" }}>{job.location}</Typography>
+            {job.isRemote && (
+              <Box
+                sx={{
+                  border: `2px solid ${DARK}`,
+                  bgcolor: "#E8F5E9",
+                  fontSize: "0.65rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  color: DARK,
+                  px: 0.8,
+                  py: 0.2,
+                }}
+              >
+                Remote
+              </Box>
+            )}
+          </Box>
+
           <Typography
             sx={{
               fontFamily: '"IBM Plex Mono", monospace',
               fontWeight: 600,
               color: GREEN,
-              mb: 2,
+              mb: 2.5,
             }}
           >
             {formatSalary(job.salaryMin, job.salaryMax)}
           </Typography>
 
-          <Stack
-            direction="row"
-            spacing={1}
-            flexWrap="wrap"
-            useFlexGap
-            sx={{ mb: 3 }}
-          >
-            {(job.skillsRequired || []).map((skill) => (
-              <Box
-                key={skill}
+          <Box sx={{ display: "flex", gap: 1.5, mb: 3, flexWrap: "wrap" }}>
+            <Box
+              sx={{ flex: "1 1 140px", border: `2px solid ${DARK}`, p: 1.2 }}
+            >
+              <Typography
                 sx={{
-                  border: `2px solid ${DARK}`,
-                  fontSize: "0.75rem",
+                  fontSize: "0.65rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  color: "#7A7267",
+                }}
+              >
+                Experience
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: '"IBM Plex Mono", monospace',
+                  fontSize: "0.9rem",
                   fontWeight: 600,
                   color: DARK,
-                  px: 1,
-                  py: 0.3,
                 }}
               >
-                {skill}
-              </Box>
-            ))}
+                {formatExperience(job.experienceRequired)}
+              </Typography>
+            </Box>
             <Box
+              sx={{ flex: "1 1 140px", border: `2px solid ${DARK}`, p: 1.2 }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "0.65rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  color: "#7A7267",
+                }}
+              >
+                Openings
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: '"IBM Plex Mono", monospace',
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                  color: DARK,
+                }}
+              >
+                {job.numberOfOpenings || 1}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography
               sx={{
-                border: `2px solid ${DARK}`,
-                fontSize: "0.75rem",
-                fontWeight: 600,
+                fontSize: "0.65rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
                 color: "#7A7267",
-                px: 1,
-                py: 0.3,
+                mb: 1,
               }}
             >
-              {job.experienceRequired}
+              Skills required
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {(job.skillsRequired || []).map((skill) => (
+                <Box
+                  key={skill}
+                  sx={{
+                    flexShrink: 0,
+                    border: `2px solid ${DARK}`,
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    color: DARK,
+                    px: 1,
+                    py: 0.3,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {skill}
+                </Box>
+              ))}
             </Box>
-            {job.numberOfOpenings && (
-              <Box
-                sx={{
-                  border: `2px solid ${DARK}`,
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "#7A7267",
-                  px: 1,
-                  py: 0.3,
-                }}
-              >
-                {job.numberOfOpenings} opening
-                {Number(job.numberOfOpenings) !== 1 ? "s" : ""}
-              </Box>
-            )}
-          </Stack>
+          </Box>
 
           <Divider sx={{ borderColor: DARK, mb: 3 }} />
 

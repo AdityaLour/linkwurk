@@ -19,6 +19,7 @@ const jobSchema = new mongoose.Schema(
         applicationType: { type: String, enum: ['internal', 'external'], default: 'internal' },
         externalApplyUrl: { type: String, trim: true, default: '' },
         status: { type: String, enum: ['open', 'closed'], default: 'open' },
+        isRemote: { type: Boolean, default: false },
     },
     { timestamps: true }
 );
