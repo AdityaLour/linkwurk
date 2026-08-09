@@ -44,7 +44,7 @@ export default function InterviewsPage() {
     <Box
       sx={{
         bgcolor: "background.default",
-        minHeight: "100%",
+        minHeight: "100vh",
         px: { xs: 3, md: 5 },
         py: 6,
       }}

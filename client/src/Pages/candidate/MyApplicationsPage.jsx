@@ -24,7 +24,7 @@ export default function MyApplicationsPage() {
         backgroundImage:
           "radial-gradient(rgba(27,94,32,0.28) 1.5px, transparent 1.5px)",
         backgroundSize: "24px 24px",
-        minHeight: "100%",
+        minHeight: "100vh",
         py: 6,
       }}
     >

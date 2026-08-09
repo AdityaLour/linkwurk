@@ -25,7 +25,7 @@ export default function JobFormPage() {
         backgroundImage:
           "radial-gradient(rgba(27,94,32,0.28) 1.5px, transparent 1.5px)",
         backgroundSize: "24px 24px",
-        minHeight: "100%",
+        minHeight: "100vh",
         px: { xs: 3, md: 5 },
         py: 6,
       }}
