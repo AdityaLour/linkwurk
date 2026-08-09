@@ -13,10 +13,11 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import EventIcon from "@mui/icons-material/Event";
 import JobCard from "@/features/jobs/components/JobCard";
 import ApplicationStatusCarousel from "./ApplicationStatusCarousel";
+import LinkWurkButton from "@/components/Button";
 import useCountUp from "@/hooks/useCountUp";
 import { getRecommendedJobs } from "@/features/jobs/api/jobsApi";
 import { getMyApplications } from "@/features/applications/api/applicationsApi";
-import { getSavedJobs } from "@/features/jobs/api/savedJobsApi";
+import { getSavedJobs, toggleSaveJob } from "@/features/jobs/api/savedJobsApi";
 import { getMyInterviewsAsCandidate } from "@/features/interviews/api/interviewsApi";
 import { getMyCandidateProfile } from "../api/candidatesApi";
 
@@ -157,6 +158,19 @@ export default function CandidateHomePage() {
     }
   }, [loading, profileCompletion]);
 
+  const savedJobIds = new Set(
+    savedJobs.map((s) => s.jobId?._id).filter(Boolean),
+  );
+
+  const handleToggleSave = async (jobId) => {
+    setSavedJobs((prev) => {
+      const exists = prev.some((s) => s.jobId?._id === jobId);
+      if (exists) return prev.filter((s) => s.jobId?._id !== jobId);
+      return [...prev, { _id: `temp-${jobId}`, jobId: { _id: jobId } }];
+    });
+    await toggleSaveJob(jobId);
+  };
+
   return (
     <Box
       sx={{
@@ -195,32 +209,67 @@ export default function CandidateHomePage() {
         >
           Browse open roles matched to your profile.
         </Typography>
-        <Button
-          onClick={() => navigate("/jobs")}
+        <Box
           sx={{
-            border: BORDER,
-            borderRadius: 0,
-            boxShadow: `5px 5px 0px ${DARK}`,
-            bgcolor: GREEN,
-            color: "#FFFFFF",
-            textTransform: "uppercase",
-            fontWeight: 700,
-            px: 3,
-            py: 1.2,
-            transition: "transform 0.15s ease, box-shadow 0.15s ease",
-            "&:hover": {
-              bgcolor: "#164d1b",
-              transform: "translate(-2px, -2px)",
-              boxShadow: `7px 7px 0px ${DARK}`,
-            },
-            "&:active": {
-              transform: "translate(3px, 3px)",
-              boxShadow: `2px 2px 0px ${DARK}`,
-            },
+            display: "flex",
+            gap: 2,
+            justifyContent: "center",
+            flexWrap: "wrap",
           }}
         >
-          Browse jobs
-        </Button>
+          <LinkWurkButton
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/jobs")}
+            sx={{
+              border: BORDER,
+              borderRadius: 0,
+              boxShadow: `5px 5px 0px ${DARK}`,
+              bgcolor: GREEN,
+              color: "#FFFFFF",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              px: 3,
+              py: 1.2,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              "&:hover": {
+                bgcolor: "#164d1b",
+                transform: "translate(-2px, -2px)",
+                boxShadow: `7px 7px 0px ${DARK}`,
+              },
+              "&:active": {
+                transform: "translate(3px, 3px)",
+                boxShadow: `2px 2px 0px ${DARK}`,
+              },
+            }}
+          >
+            Browse jobs
+          </LinkWurkButton>
+          <Button
+            onClick={() => navigate("/applications")}
+            sx={{
+              border: BORDER,
+              borderRadius: 0,
+              color: DARK,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              px: 3,
+              bgcolor: "#FFFFFF",
+              boxShadow: SHADOW,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              "&:hover": {
+                transform: "translate(-2px, -2px)",
+                boxShadow: `7px 7px 0px ${GREEN}`,
+              },
+              "&:active": {
+                transform: "translate(3px, 3px)",
+                boxShadow: `2px 2px 0px ${GREEN}`,
+              },
+            }}
+          >
+            My applications
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ px: { xs: 3, md: 5 }, pb: 3, maxWidth: 1100, mx: "auto" }}>
@@ -346,7 +395,11 @@ export default function CandidateHomePage() {
           ) : recommendedJobs.length > 0 ? (
             recommendedJobs.slice(0, 3).map((job) => (
               <Grid item xs={12} sm={6} md={4} key={job._id}>
-                <JobCard job={job} />
+                <JobCard
+                  job={job}
+                  isSaved={savedJobIds.has(job._id)}
+                  onToggleSave={() => handleToggleSave(job._id)}
+                />
               </Grid>
             ))
           ) : (
