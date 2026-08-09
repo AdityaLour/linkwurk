@@ -232,6 +232,20 @@ export default function Navbar() {
                 }}
               >
                 <MenuItem
+                  onClick={() => {
+                    navigate("/profile");
+                    setAnchorEl(null);
+                  }}
+                  sx={{
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    fontSize: "0.8rem",
+                    color: DARK,
+                  }}
+                >
+                  My Profile
+                </MenuItem>
+                <MenuItem
                   onClick={handleLogout}
                   sx={{
                     fontWeight: 700,
