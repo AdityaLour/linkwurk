@@ -3,6 +3,7 @@ import MainLayout from "@/components/MainLayout";
 import HomePage from "./HomePage";
 import CandidateHomePage from "@/features/candidates/components/CandidateHomePage";
 import RecruiterHomePage from "@/features/recruiters/components/RecruiterHomePage";
+import AdminHomePage from "@/features/admin/components/AdminHomePage";
 
 export default function HomeRouter() {
   const { user, loading } = useAuth();
@@ -15,8 +16,10 @@ export default function HomeRouter() {
         <HomePage />
       ) : user.role === "candidate" ? (
         <CandidateHomePage />
-      ) : (
+      ) : user.role === "recruiter" ? (
         <RecruiterHomePage />
+      ) : (
+        <AdminHomePage />
       )}
     </MainLayout>
   );

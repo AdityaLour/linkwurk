@@ -54,8 +54,17 @@ export default function Navbar() {
     { label: "My jobs", to: "/recruiter/jobs" },
     { label: "Post a job", to: "/recruiter/jobs/new" },
   ];
-  const links = user?.role === "recruiter" ? recruiterLinks : candidateLinks;
 
+  const adminLinks = [
+    { label: "Manage users", to: "/admin/users" },
+    { label: "Manage recruiters", to: "/admin/recruiters" },
+  ];
+  const links =
+    user?.role === "recruiter"
+      ? recruiterLinks
+      : user?.role === "admin"
+        ? adminLinks
+        : candidateLinks;
   const navLinkSx = {
     fontWeight: 700,
     fontSize: "0.8rem",
