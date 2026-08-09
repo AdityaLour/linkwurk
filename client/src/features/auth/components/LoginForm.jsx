@@ -15,6 +15,20 @@ import AuthLayout from "@/components/AuthLayout";
 import { login, googleAuth } from "../api/authApi";
 import { useAuth } from "@/context/AuthContext";
 
+const DARK = "#14431A";
+const GREEN = "#1B5E20";
+
+const fieldSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 0,
+    bgcolor: "#FFFFFF",
+    "& fieldset": { borderWidth: "2.5px", borderColor: DARK },
+    "&:hover fieldset": { borderColor: GREEN },
+    "&.Mui-focused fieldset": { borderWidth: "2.5px", borderColor: GREEN },
+  },
+  "& .MuiInputLabel-root": { color: DARK, fontWeight: 600 },
+};
+
 export default function LoginForm() {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
@@ -53,15 +67,26 @@ export default function LoginForm() {
 
   return (
     <AuthLayout tagline="Where skills meet the right role.">
-      <Typography variant="h4" sx={{ mb: 1 }}>
+      <Typography
+        sx={{
+          fontFamily: '"Space Grotesk", sans-serif',
+          fontWeight: 700,
+          fontSize: "1.3rem",
+          color: DARK,
+          mb: 1,
+        }}
+      >
         Welcome back
       </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
+      <Typography sx={{ color: "#2F5A33", mb: 3 }}>
         Sign in to continue.
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{ mb: 2, borderRadius: 0, border: `2px solid ${DARK}` }}
+        >
           {error}
         </Alert>
       )}
@@ -80,6 +105,7 @@ export default function LoginForm() {
             onChange={handleChange}
             required
             fullWidth
+            sx={fieldSx}
           />
           <TextField
             name="password"
@@ -89,16 +115,34 @@ export default function LoginForm() {
             onChange={handleChange}
             required
             fullWidth
+            sx={fieldSx}
           />
           <Button
             type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
             disabled={loading}
+            sx={{
+              border: `2.5px solid ${DARK}`,
+              borderRadius: 0,
+              bgcolor: GREEN,
+              color: "#FFFFFF",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              py: 1.3,
+              boxShadow: `5px 5px 0px ${DARK}`,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              "&:hover": {
+                bgcolor: "#164d1b",
+                transform: "translate(-2px, -2px)",
+                boxShadow: `7px 7px 0px ${DARK}`,
+              },
+              "&:active": {
+                transform: "translate(3px, 3px)",
+                boxShadow: `2px 2px 0px ${DARK}`,
+              },
+            }}
           >
             {loading ? (
-              <CircularProgress size={24} color="inherit" />
+              <CircularProgress size={22} sx={{ color: "#FFFFFF" }} />
             ) : (
               "Sign in"
             )}
@@ -106,7 +150,14 @@ export default function LoginForm() {
         </Stack>
       </Box>
 
-      <Divider sx={{ my: 3, width: "100%", maxWidth: { xs: "100%", sm: 360 } }}>
+      <Divider
+        sx={{
+          my: 3,
+          width: "100%",
+          maxWidth: { xs: "100%", sm: 360 },
+          borderColor: DARK,
+        }}
+      >
         or
       </Divider>
 
@@ -117,12 +168,16 @@ export default function LoginForm() {
         />
       </Box>
 
-      <Typography sx={{ mt: 3 }}>
+      <Typography sx={{ mt: 3, color: DARK }}>
         Don't have an account?{" "}
         <Typography
           component="span"
-          color="secondary.main"
-          sx={{ cursor: "pointer", fontWeight: 600 }}
+          sx={{
+            color: GREEN,
+            fontWeight: 700,
+            cursor: "pointer",
+            textDecoration: "underline",
+          }}
           onClick={() => navigate("/role-select")}
         >
           Sign up

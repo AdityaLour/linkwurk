@@ -12,7 +12,7 @@ const SEQUENCE = [0, 1, 2];
 const STEP_DELAY = 1600;
 const HOLD_DELAY = 3200;
 const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const DOT_BOX = 20; // fixed container size — never changes, this is what keeps the line still
+const DOT_BOX = 20;
 
 export default function StageTracker() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -20,7 +20,6 @@ export default function StageTracker() {
   useEffect(() => {
     let stepIndex = 0;
     let timeoutId;
-
     const advance = () => {
       stepIndex++;
       if (stepIndex < SEQUENCE.length) {
@@ -34,7 +33,6 @@ export default function StageTracker() {
         }, HOLD_DELAY);
       }
     };
-
     timeoutId = setTimeout(advance, STEP_DELAY);
     return () => clearTimeout(timeoutId);
   }, []);
@@ -62,7 +60,6 @@ export default function StageTracker() {
                 mr: 2,
               }}
             >
-              {/* fixed-size outer box — the line below aligns to THIS, which never resizes */}
               <Box
                 sx={{
                   position: "relative",
@@ -78,8 +75,7 @@ export default function StageTracker() {
                     sx={{
                       position: "absolute",
                       inset: -4,
-                      borderRadius: "50%",
-                      border: "2px solid #A5D6A7",
+                      border: "2px solid rgba(255,255,255,0.7)",
                       animation:
                         "pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                       "@keyframes pulse": {
@@ -90,15 +86,12 @@ export default function StageTracker() {
                     }}
                   />
                 )}
-                {/* the inner dot — THIS is what grows/shrinks, safely, since the outer box stays fixed */}
                 <Box
                   sx={{
-                    width: isActive ? 16 : 12,
-                    height: isActive ? 16 : 12,
-                    borderRadius: "50%",
-                    bgcolor: isPast || isActive ? "#A5D6A7" : "transparent",
-                    border: "2px solid",
-                    borderColor: isActive ? "#E8F5E9" : "#66BB6A",
+                    width: isActive ? 15 : 11,
+                    height: isActive ? 15 : 11,
+                    bgcolor: isPast || isActive ? "#FFFFFF" : "transparent",
+                    border: "2.5px solid #FFFFFF",
                     transition: `all 0.6s ${EASE}`,
                   }}
                 />
@@ -108,8 +101,8 @@ export default function StageTracker() {
                   sx={{
                     width: 2,
                     height: 40,
-                    bgcolor: isPast ? "#A5D6A7" : "#66BB6A",
-                    opacity: isPast ? 1 : 0.4,
+                    bgcolor: "#FFFFFF",
+                    opacity: isPast ? 0.9 : 0.35,
                     transition: `all 0.6s ${EASE}`,
                   }}
                 />
@@ -119,8 +112,8 @@ export default function StageTracker() {
               sx={{
                 fontFamily: '"IBM Plex Mono", monospace',
                 fontSize: "0.95rem",
-                fontWeight: isActive ? 600 : 400,
-                opacity: isActive ? 1 : 0.75,
+                fontWeight: isActive ? 700 : 400,
+                opacity: isActive ? 1 : 0.7,
                 pt: "2px",
                 transition: `all 0.6s ${EASE}`,
               }}

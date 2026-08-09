@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 
 export default function NeutralPanel({
   tagline = "Where skills meet the right role.",
@@ -8,10 +8,13 @@ export default function NeutralPanel({
   return (
     <Box sx={{ textAlign: "center" }}>
       <Typography
-        variant="h4"
         sx={{
+          fontFamily: '"Space Grotesk", sans-serif',
+          fontWeight: 700,
+          fontSize: "1.4rem",
           mb: 6,
           maxWidth: 360,
+          mx: "auto",
           opacity: 0,
           animation: "fadeSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           "@keyframes fadeSlideIn": {
@@ -31,20 +34,17 @@ export default function NeutralPanel({
             left: 40,
             right: 40,
             height: 2,
-            bgcolor: "rgba(255,255,255,0.2)",
+            bgcolor: "rgba(255,255,255,0.3)",
           }}
         />
-
         <Box
           sx={{
             position: "absolute",
             top: 28,
             width: 8,
             height: 8,
-            borderRadius: "50%",
-            bgcolor: "#A5D6A7",
+            bgcolor: "#E3A008",
             transform: "translateY(-50%)",
-            boxShadow: "0 0 10px 3px rgba(165,214,167,0.7)",
             animation: "travel 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
             "@keyframes travel": {
               "0%": { left: 40, opacity: 0 },
@@ -54,7 +54,6 @@ export default function NeutralPanel({
             },
           }}
         />
-
         <Box
           sx={{
             position: "absolute",
@@ -70,29 +69,25 @@ export default function NeutralPanel({
             sx={{
               width: 56,
               height: 56,
-              borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.08)",
-              border: "2px solid rgba(255,255,255,0.3)",
+              border: "2.5px solid rgba(255,255,255,0.6)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <PersonIcon sx={{ fontSize: 28 }} />{" "}
+            <PersonIcon sx={{ fontSize: 28 }} />
           </Box>
           <Typography
             sx={{
               mt: 1,
               fontFamily: '"IBM Plex Mono", monospace',
               fontSize: "0.75rem",
-              opacity: 0.8,
+              opacity: 0.85,
             }}
           >
             Candidate
           </Typography>
         </Box>
-
-        {/* recruiter node */}
         <Box
           sx={{
             position: "absolute",
@@ -108,22 +103,20 @@ export default function NeutralPanel({
             sx={{
               width: 56,
               height: 56,
-              borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.08)",
-              border: "2px solid rgba(255,255,255,0.3)",
+              border: "2.5px solid rgba(255,255,255,0.6)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <BusinessCenterOutlinedIcon sx={{ fontSize: 26 }} />
+            <BusinessCenterIcon sx={{ fontSize: 26 }} />
           </Box>
           <Typography
             sx={{
               mt: 1,
               fontFamily: '"IBM Plex Mono", monospace',
               fontSize: "0.75rem",
-              opacity: 0.8,
+              opacity: 0.85,
             }}
           >
             Recruiter
