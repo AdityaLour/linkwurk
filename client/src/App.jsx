@@ -19,6 +19,7 @@ import MyApplicationsPage from "@/pages/candidate/MyApplicationsPage";
 import SavedJobsPage from "@/pages/candidate/SavedJobsPage";
 import CandidateInterviewsPage from "@/pages/candidate/CandidateInterviewsPage";
 import ProfileRouter from "@/pages/ProfileRouter";
+import VerifyEmailPage from "@/pages/VerifyEmailPage";
 
 function App() {
   return (
@@ -167,6 +168,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
       </Routes>
     </BrowserRouter>
   );

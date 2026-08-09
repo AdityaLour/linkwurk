@@ -20,6 +20,9 @@ import {
   updateMyCandidateProfile,
 } from "@/features/candidates/api/candidatesApi";
 
+import { useAuth } from "@/context/AuthContext";
+import EmailVerificationBanner from "@/components/EmailVerificationBanner";
+
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
 const BORDER = `3px solid ${DARK}`;
@@ -73,6 +76,7 @@ const emptyEducation = {
 };
 
 export default function CandidateProfilePage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -191,6 +195,8 @@ export default function CandidateProfilePage() {
         >
           My profile
         </Typography>
+
+        <EmailVerificationBanner isVerified={user?.isEmailVerified} />
 
         <Box
           sx={{

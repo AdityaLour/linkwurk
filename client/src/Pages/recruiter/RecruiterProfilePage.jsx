@@ -6,10 +6,12 @@ import {
   MenuItem,
   Button,
   Stack,
-  Alert,
   Skeleton,
 } from "@mui/material";
 import ImageUploadField from "@/components/ImageUploadField";
+import StatusBanner from "@/components/StatusBanner";
+import EmailVerificationBanner from "@/components/EmailVerificationBanner";
+import { useAuth } from "@/context/AuthContext";
 import {
   getMyRecruiterProfile,
   updateMyRecruiterProfile,
@@ -52,6 +54,7 @@ const primaryBtnSx = {
 };
 
 export default function RecruiterProfilePage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -85,6 +88,13 @@ export default function RecruiterProfilePage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (saved) {
+      const t = setTimeout(() => setSaved(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [saved]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -152,6 +162,8 @@ export default function RecruiterProfilePage() {
           Company profile
         </Typography>
 
+        <EmailVerificationBanner isVerified={user?.isEmailVerified} />
+
         <Box
           sx={{
             border: BORDER,
@@ -160,21 +172,11 @@ export default function RecruiterProfilePage() {
             p: { xs: 3, md: 4 },
           }}
         >
-          {error && (
-            <Alert
-              severity="error"
-              sx={{ mb: 2, borderRadius: 0, border: `2px solid ${DARK}` }}
-            >
-              {error}
-            </Alert>
-          )}
+          {error && <StatusBanner type="error">{error}</StatusBanner>}
           {saved && (
-            <Alert
-              severity="success"
-              sx={{ mb: 2, borderRadius: 0, border: `2px solid ${DARK}` }}
-            >
-              Profile updated.
-            </Alert>
+            <StatusBanner type="success">
+              Profile updated successfully.
+            </StatusBanner>
           )}
 
           <Stack spacing={2.5}>
