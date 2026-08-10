@@ -22,6 +22,7 @@ import CandidateInterviewsPage from "@/pages/candidate/CandidateInterviewsPage";
 import ProfileRouter from "@/pages/ProfileRouter";
 import VerifyEmailPage from "@/pages/VerifyEmailPage";
 import ManageUsersPage from "@/pages/admin/ManageUsersPage";
+import ManageRecruitersPage from "@/pages/admin/ManageRecruitersPage";
 
 function App() {
   return (
@@ -180,6 +181,17 @@ function App() {
               <ProtectedRoute allowedRole="admin">
                 <MainLayout>
                   <ManageUsersPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/recruiters"
+            element={
+              <ProtectedRoute allowedRole="admin">
+                <MainLayout>
+                  <ManageRecruitersPage />
                 </MainLayout>
               </ProtectedRoute>
             }

@@ -207,9 +207,8 @@ export const verifyUserEmail = async (req, res) => {
 
 export const getAllRecruitersWithStats = async (req, res) => {
     try {
-        const recruiters = await Recruiter.find().populate('userId', 'firstName lastName email isActive createdAt');
+        const recruiters = await Recruiter.find().populate('userId', 'firstName lastName email isActive isEmailVerified createdAt');
         const recruiterIds = recruiters.map((r) => r._id);
-
         const jobCounts = await Job.aggregate([
             { $match: { recruiterId: { $in: recruiterIds } } },
             { $group: { _id: '$recruiterId', count: { $sum: 1 } } },
@@ -229,5 +228,31 @@ export const getAllRecruitersWithStats = async (req, res) => {
         res.status(200).json({ recruiters: result });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch recruiters', error: err.message });
+    }
+};
+
+export const getRecruiterDetail = async (req, res) => {
+    try {
+        const recruiter = await Recruiter.findById(req.params.id).populate('userId', 'firstName lastName email isActive isEmailVerified createdAt');
+        if (!recruiter) return res.status(404).json({ message: 'Recruiter not found' });
+
+        const jobs = await Job.find({ recruiterId: recruiter._id }).select('title status createdAt').sort({ createdAt: -1 });
+        const activeCount = jobs.filter((j) => j.status === 'open').length;
+        const closedCount = jobs.filter((j) => j.status === 'closed').length;
+
+        res.status(200).json({
+            recruiter: {
+                _id: recruiter._id,
+                userId: recruiter.userId,
+                companyName: recruiter.companyName,
+                companyLogo: recruiter.companyLogo,
+                numberOfEmployees: recruiter.numberOfEmployees,
+            },
+            jobs,
+            activeCount,
+            closedCount,
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch recruiter detail', error: err.message });
     }
 };
