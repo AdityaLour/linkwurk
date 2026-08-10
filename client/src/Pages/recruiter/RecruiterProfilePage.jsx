@@ -11,6 +11,7 @@ import {
 import ImageUploadField from "@/components/ImageUploadField";
 import StatusBanner from "@/components/StatusBanner";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner";
+import AccountDetailsSection from "@/components/AccountDetailsSection";
 import { useAuth } from "@/context/AuthContext";
 import {
   getMyRecruiterProfile,
@@ -71,6 +72,7 @@ export default function RecruiterProfilePage() {
   const [profilePictureFile, setProfilePictureFile] = useState(null);
   const [companyLogoUrl, setCompanyLogoUrl] = useState("");
   const [companyLogoFile, setCompanyLogoFile] = useState(null);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     getMyRecruiterProfile()
@@ -88,6 +90,10 @@ export default function RecruiterProfilePage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (user?.email) setEmail(user.email);
+  }, [user]);
 
   useEffect(() => {
     if (saved) {
@@ -250,6 +256,8 @@ export default function RecruiterProfilePage() {
             </Button>
           </Stack>
         </Box>
+
+        <AccountDetailsSection email={email} onEmailUpdated={setEmail} />
       </Box>
     </Box>
   );

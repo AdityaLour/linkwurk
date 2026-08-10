@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, TextField, Button, Stack } from "@mui/material";
 import { updateEmail, updatePassword } from "@/features/auth/api/authApi";
 import StatusBanner from "./StatusBanner";
+import { useAuth } from "@/context/AuthContext";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -28,6 +29,7 @@ const outlineBtnSx = {
 };
 
 export default function AccountDetailsSection({ email, onEmailUpdated }) {
+  const { refreshUser } = useAuth();
   const [emailEditing, setEmailEditing] = useState(false);
   const [passwordEditing, setPasswordEditing] = useState(false);
 
@@ -48,6 +50,20 @@ export default function AccountDetailsSection({ email, onEmailUpdated }) {
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
+  useEffect(() => {
+    if (emailError) {
+      const t = setTimeout(() => setEmailError(""), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [emailError]);
+
+  useEffect(() => {
+    if (passwordError) {
+      const t = setTimeout(() => setPasswordError(""), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [passwordError]);
+
   const maskEmail = (e) => {
     if (!e) return "";
     const [name, domain] = e.split("@");
@@ -65,6 +81,7 @@ export default function AccountDetailsSection({ email, onEmailUpdated }) {
         emailForm.currentPassword,
         emailForm.newEmail,
       );
+      await refreshUser();
       setEmailSaved(true);
       setEmailEditing(false);
       setEmailForm({ currentPassword: "", newEmail: "" });

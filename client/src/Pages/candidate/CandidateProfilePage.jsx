@@ -22,6 +22,7 @@ import {
 
 import { useAuth } from "@/context/AuthContext";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner";
+import AccountDetailsSection from "@/components/AccountDetailsSection";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -91,6 +92,7 @@ export default function CandidateProfilePage() {
   const [resumeFile, setResumeFile] = useState(null);
   const [existingCertifications, setExistingCertifications] = useState([]);
   const [newCertifications, setNewCertifications] = useState([]);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     getMyCandidateProfile()
@@ -107,6 +109,10 @@ export default function CandidateProfilePage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (user?.email) setEmail(user.email);
+  }, [user]);
 
   useEffect(() => {
     if (saved) {
@@ -472,6 +478,8 @@ export default function CandidateProfilePage() {
             </Button>
           </Stack>
         </Box>
+
+        <AccountDetailsSection email={email} onEmailUpdated={setEmail} />
       </Box>
     </Box>
   );
