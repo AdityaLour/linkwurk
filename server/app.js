@@ -15,6 +15,8 @@ import interviewRoutes from './routes/interviewRoutes.js';
 import savedJobRoutes from './routes/savedJobsRoutes.js';
 import skillRoutes from './routes/skillRoutes.js';
 import universityRoutes from './routes/universityRoutes.js';
+import publicRoutes from './routes/publicRoute.js';
+
 
 
 const app = express()
@@ -35,6 +37,7 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/saved-jobs', savedJobRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/universities', universityRoutes);
+app.use('/api/public', publicRoutes);
 
 const PORT = process.env.PORT | 5000
 
