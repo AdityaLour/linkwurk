@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import {
   Alert,
@@ -31,6 +31,8 @@ const fieldSx = {
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const showDeactivatedMessage = searchParams.get("deactivated") === "true";
   const { refreshUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -81,6 +83,16 @@ export default function LoginForm() {
       <Typography sx={{ color: "#2F5A33", mb: 3 }}>
         Sign in to continue.
       </Typography>
+
+      {showDeactivatedMessage && (
+        <Alert
+          severity="warning"
+          sx={{ mb: 2, borderRadius: 0, border: `2px solid ${DARK}` }}
+        >
+          Your account has been deactivated. Contact support if you believe this
+          is a mistake.
+        </Alert>
+      )}
 
       {error && (
         <Alert

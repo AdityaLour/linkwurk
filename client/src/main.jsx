@@ -8,16 +8,13 @@ import "@fontsource/ibm-plex-sans/500.css";
 import "@fontsource/ibm-plex-mono/400.css";
 import App from "./App.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "@/context/AuthContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <App />
       </GoogleOAuthProvider>
     </ThemeProvider>
   </StrictMode>,

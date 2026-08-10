@@ -1,9 +1,15 @@
 import User from '../models/User.js';
 
-export const requireAuth = (req, res, next) => {
+export const requireAuth = async (req, res, next) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: 'Not authenticated' });
     }
+
+    const user = await User.findById(req.session.userId);
+    if (!user || !user.isActive) {
+        return res.status(401).json({ message: 'Your account has been deactivated' });
+    }
+
     next();
 };
 
