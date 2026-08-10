@@ -193,6 +193,11 @@ export default function RecruiterHomePage() {
           "radial-gradient(rgba(27,94,32,0.28) 1.5px, transparent 1.5px)",
         backgroundSize: "24px 24px",
         minHeight: "100vh",
+        animation: "driftDots 40s linear infinite",
+        "@keyframes driftDots": {
+          from: { backgroundPosition: "0px 0px" },
+          to: { backgroundPosition: "480px 480px" },
+        },
       }}
     >
       <Box
