@@ -45,6 +45,7 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const guestLinks = [{ label: "Browse jobs", to: "/jobs" }];
   const candidateLinks = [
     { label: "Browse jobs", to: "/jobs" },
     { label: "Saved jobs", to: "/saved-jobs" },
@@ -54,20 +55,22 @@ export default function Navbar() {
     { label: "My jobs", to: "/recruiter/jobs" },
     { label: "Post a job", to: "/recruiter/jobs/new" },
   ];
-
   const adminLinks = [
     { label: "Manage users", to: "/admin/users" },
     { label: "Manage recruiters", to: "/admin/recruiters" },
   ];
-  const links =
-    user?.role === "recruiter"
+
+  const links = !user
+    ? guestLinks
+    : user.role === "recruiter"
       ? recruiterLinks
-      : user?.role === "admin"
+      : user.role === "admin"
         ? adminLinks
         : candidateLinks;
+
   const navLinkSx = {
     fontWeight: 700,
-    fontSize: "0.8rem",
+    fontSize: "0.95rem",
     textTransform: "uppercase",
     letterSpacing: "0.3px",
     color: "#2F5A33",
