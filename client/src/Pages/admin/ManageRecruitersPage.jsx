@@ -7,6 +7,7 @@ import {
 } from "@/features/admin/api/adminApi";
 import RecruiterDetailDialog from "@/features/admin/components/RecruiterDetailDialog";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
+import SearchField from "@/components/SearchField";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -30,6 +31,7 @@ export default function ManageRecruitersPage() {
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState("");
   const [selectedRecruiterId, setSelectedRecruiterId] = useState(null);
+  const [search, setSearch] = useState("");
 
   const loadRecruiters = async () => {
     setLoading(true);
@@ -89,6 +91,18 @@ export default function ManageRecruitersPage() {
     }
   };
 
+  const filteredRecruiters = recruiters.filter((r) => {
+    const q = search.toLowerCase();
+    if (!q) return true;
+    const u = r.userId || {};
+    return (
+      r.companyName?.toLowerCase().includes(q) ||
+      u.firstName?.toLowerCase().includes(q) ||
+      u.lastName?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <Box
       sx={{
@@ -113,6 +127,14 @@ export default function ManageRecruitersPage() {
         >
           Manage recruiters
         </Typography>
+
+        <Box sx={{ mb: 2, maxWidth: 320 }}>
+          <SearchField
+            value={search}
+            onChange={setSearch}
+            placeholder="Search by company or name..."
+          />
+        </Box>
 
         {error && (
           <Box
@@ -140,12 +162,14 @@ export default function ManageRecruitersPage() {
                 sx={{ borderBottom: "2px solid #E8F5E9" }}
               />
             ))
-          ) : recruiters.length === 0 ? (
+          ) : filteredRecruiters.length === 0 ? (
             <Typography sx={{ p: 4, textAlign: "center", color: "#2F5A33" }}>
-              No recruiters found.
+              {recruiters.length === 0
+                ? "No recruiters found."
+                : "No recruiters match your search."}
             </Typography>
           ) : (
-            recruiters.map((r, i) => {
+            filteredRecruiters.map((r, i) => {
               const u = r.userId || {};
               return (
                 <Box
@@ -160,7 +184,9 @@ export default function ManageRecruitersPage() {
                     px: 2.5,
                     py: 2,
                     borderBottom:
-                      i < recruiters.length - 1 ? "2px solid #E8F5E9" : "none",
+                      i < filteredRecruiters.length - 1
+                        ? "2px solid #E8F5E9"
+                        : "none",
                     opacity: u.isActive === false ? 0.55 : 1,
                     cursor: "pointer",
                     transition: "background-color 0.15s ease",

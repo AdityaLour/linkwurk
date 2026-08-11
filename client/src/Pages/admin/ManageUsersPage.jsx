@@ -6,6 +6,7 @@ import {
   verifyUserEmail,
 } from "@/features/admin/api/adminApi";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
+import SearchField from "@/components/SearchField";
 
 const DARK = "#14431A";
 const GREEN = "#1B5E20";
@@ -33,14 +34,15 @@ export default function ManageUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState("");
 
-  const loadUsers = async (role) => {
+  const loadUsers = async (role, searchTerm) => {
     setLoading(true);
     setError("");
     try {
-      const res = await getAllUsers(role || undefined);
+      const res = await getAllUsers(role || undefined, searchTerm || undefined);
       setUsers(res.data.users);
     } catch (err) {
       setError("Failed to load users.");
@@ -50,8 +52,9 @@ export default function ManageUsersPage() {
   };
 
   useEffect(() => {
-    loadUsers(filter);
-  }, [filter]);
+    const t = setTimeout(() => loadUsers(filter, search), 350);
+    return () => clearTimeout(t);
+  }, [filter, search]);
 
   const handleToggleStatus = async (userId) => {
     setBusyId(userId);
@@ -109,6 +112,14 @@ export default function ManageUsersPage() {
         >
           Manage users
         </Typography>
+
+        <Box sx={{ mb: 2, maxWidth: 320 }}>
+          <SearchField
+            value={search}
+            onChange={setSearch}
+            placeholder="Search by name or email..."
+          />
+        </Box>
 
         <Box sx={{ display: "flex", gap: 0.8, mb: 3, flexWrap: "wrap" }}>
           {FILTERS.map((f) => (

@@ -1,6 +1,5 @@
 import Job from '../models/Job.js';
 import Recruiter from '../models/Recruiter.js';
-import Candidate from '../models/Candidate.js';
 
 export const createJob = async (req, res) => {
     try {
@@ -41,16 +40,6 @@ export const createJob = async (req, res) => {
     }
 };
 
-export const getMyJobs = async (req, res) => {
-    try {
-        const recruiter = await Recruiter.findOne({ userId: req.session.userId });
-        const jobs = await Job.find({ recruiterId: recruiter._id }).sort({ createdAt: -1 });
-        res.status(200).json({ jobs });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
-    }
-};
-
 export const updateJob = async (req, res) => {
     try {
         const recruiter = await Recruiter.findOne({ userId: req.session.userId });
@@ -85,6 +74,78 @@ export const updateJob = async (req, res) => {
         res.status(200).json({ job });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update job', error: err.message });
+    }
+};
+
+export const getAllJobs = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 9;
+        const skip = (page - 1) * limit;
+
+        const filter = { status: 'open' };
+
+        if (req.query.location) {
+            filter.location = { $regex: req.query.location, $options: 'i' };
+        }
+        if (req.query.experienceRequired) {
+            filter.experienceRequired = req.query.experienceRequired;
+        }
+        if (req.query.skills) {
+            const skillsArray = req.query.skills.split(',').filter(Boolean);
+            if (skillsArray.length > 0) filter.skillsRequired = { $in: skillsArray };
+        }
+        if (req.query.salaryMin) {
+            filter.salaryMax = { $gte: Number(req.query.salaryMin) };
+        }
+        if (req.query.isRemote === 'true') {
+            filter.isRemote = true;
+        }
+        if (req.query.search) {
+            const searchRegex = { $regex: req.query.search, $options: 'i' };
+            filter.$or = [{ title: searchRegex }, { description: searchRegex }];
+        }
+
+        const totalJobs = await Job.countDocuments(filter);
+        const jobs = await Job.find(filter)
+            .populate('recruiterId', 'companyName companyLogo')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({
+            jobs,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalJobs / limit),
+                totalJobs,
+            },
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
+    }
+};
+
+export const getJobById = async (req, res) => {
+    try {
+        const job = await Job.findById(req.params.id).populate(
+            'recruiterId',
+            'companyName companyLogo companyTagline'
+        );
+        if (!job) return res.status(404).json({ message: 'Job not found' });
+        res.status(200).json({ job });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch job', error: err.message });
+    }
+};
+
+export const getMyJobs = async (req, res) => {
+    try {
+        const recruiter = await Recruiter.findOne({ userId: req.session.userId });
+        const jobs = await Job.find({ recruiterId: recruiter._id }).sort({ createdAt: -1 });
+        res.status(200).json({ jobs });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch your jobs', error: err.message });
     }
 };
 
@@ -123,81 +184,29 @@ export const updateJobStatus = async (req, res) => {
     }
 };
 
-export const getAllJobs = async (req, res) => {
-    try {
-        const limit = parseInt(req.query.limit) || 50;
-        const filter = { status: 'open' };
-
-        if (req.query.location) {
-            filter.location = { $regex: req.query.location, $options: 'i' };
-        }
-        if (req.query.experienceRequired) {
-            filter.experienceRequired = req.query.experienceRequired;
-        }
-        if (req.query.skills) {
-            const skillsArray = req.query.skills.split(',').filter(Boolean);
-            if (skillsArray.length > 0) filter.skillsRequired = { $in: skillsArray };
-        }
-        if (req.query.salaryMin) {
-            filter.salaryMax = { $gte: Number(req.query.salaryMin) };
-        }
-
-        if (req.query.isRemote === 'true') {
-            filter.isRemote = true;
-        }
-
-        const jobs = await Job.find(filter)
-            .populate('recruiterId', 'companyName companyLogo')
-            .sort({ createdAt: -1 })
-            .limit(limit);
-
-        res.status(200).json({ jobs, totalJobs: jobs.length });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch jobs', error: err.message });
-    }
-};
-
-export const getJobById = async (req, res) => {
-    try {
-        const job = await Job.findById(req.params.id).populate('recruiterId', 'companyName companyLogo website companyTagline address');
-        if (!job) return res.status(404).json({ message: 'Job not found' });
-        res.status(200).json({ job });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch job', error: err.message });
-    }
-};
-
 export const getRecommendedJobs = async (req, res) => {
     try {
+        const Candidate = (await import('../models/Candidate.js')).default;
         const candidate = await Candidate.findOne({ userId: req.session.userId });
-        if (!candidate) return res.status(404).json({ message: 'Candidate profile not found' });
 
-        const candidateSkills = new Set((candidate.skills || []).map((s) => s.toLowerCase().trim()));
-
-        if (candidateSkills.size === 0) {
-            return res.status(200).json({ jobs: [], message: 'Add skills to your profile to get recommendations' });
-        }
-
+        const skillSet = new Set((candidate.skills || []).map((s) => s.toLowerCase().trim()));
         const openJobs = await Job.find({ status: 'open' }).populate('recruiterId', 'companyName companyLogo');
 
         const scored = openJobs
             .map((job) => {
                 const jobSkills = (job.skillsRequired || []).map((s) => s.toLowerCase().trim());
-                const matchCount = jobSkills.filter((s) => candidateSkills.has(s)).length;
-                const matchPercent = jobSkills.length ? Math.round((matchCount / jobSkills.length) * 100) : 0;
+                const matchCount = jobSkills.filter((s) => skillSet.has(s)).length;
+                const matchPercent = jobSkills.length > 0 ? Math.round((matchCount / jobSkills.length) * 100) : 0;
                 return { job, matchCount, matchPercent };
             })
-            .filter((item) => item.matchCount > 0)
-            .sort((a, b) => b.matchPercent - a.matchPercent)
+            .filter((entry) => entry.matchCount > 0)
+            .sort((a, b) => b.matchCount - a.matchCount)
             .slice(0, 10);
 
-        const jobs = scored.map((item) => ({
-            ...item.job.toObject(),
-            matchPercent: item.matchPercent,
-        }));
+        const jobs = scored.map((entry) => ({ ...entry.job.toObject(), matchPercent: entry.matchPercent }));
 
         res.status(200).json({ jobs });
     } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch recommendations', error: err.message });
+        res.status(500).json({ message: 'Failed to fetch recommended jobs', error: err.message });
     }
 };

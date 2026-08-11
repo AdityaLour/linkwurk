@@ -168,6 +168,10 @@ export const getAllUsers = async (req, res) => {
     try {
         const filter = {};
         if (req.query.role) filter.role = req.query.role;
+        if (req.query.search) {
+            const searchRegex = { $regex: req.query.search, $options: 'i' };
+            filter.$or = [{ firstName: searchRegex }, { lastName: searchRegex }, { email: searchRegex }];
+        }
         const users = await User.find(filter).select('-passwordHash').sort({ createdAt: -1 });
         res.status(200).json({ users });
     } catch (err) {
@@ -209,6 +213,7 @@ export const getAllRecruitersWithStats = async (req, res) => {
     try {
         const recruiters = await Recruiter.find().populate('userId', 'firstName lastName email isActive isEmailVerified createdAt');
         const recruiterIds = recruiters.map((r) => r._id);
+
         const jobCounts = await Job.aggregate([
             { $match: { recruiterId: { $in: recruiterIds } } },
             { $group: { _id: '$recruiterId', count: { $sum: 1 } } },

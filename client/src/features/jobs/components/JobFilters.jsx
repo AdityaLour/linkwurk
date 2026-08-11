@@ -1,5 +1,14 @@
-import { TextField, MenuItem, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  Typography,
+  Box,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import SkillsAutocomplete from "@/features/candidates/components/SkillsAutocomplete";
+import SearchField from "@/components/SearchField";
+import { formatExperience } from "@/lib/formatExperience";
 
 const DARK = "#14431A";
 const EXPERIENCE_OPTIONS = ["Fresher", "0-1", "1-3", "3-5", "5-10", "10+"];
@@ -40,13 +49,43 @@ export default function JobFilters({ filters, onChange }) {
         Filters
       </Typography>
 
+      <Box sx={{ mb: 2.5 }}>
+        <SearchField
+          value={filters.search || ""}
+          onChange={(v) => onChange({ ...filters, search: v })}
+          placeholder="Search jobs..."
+        />
+      </Box>
+
       <TextField
         label="Location"
         value={filters.location}
         onChange={(e) => onChange({ ...filters, location: e.target.value })}
         fullWidth
         size="small"
-        sx={{ ...fieldSx, mb: 2.5 }}
+        disabled={filters.isRemote}
+        sx={{ ...fieldSx, mb: 1 }}
+      />
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={!!filters.isRemote}
+            onChange={(e) =>
+              onChange({ ...filters, isRemote: e.target.checked })
+            }
+            size="small"
+            sx={{ color: DARK, "&.Mui-checked": { color: "#1B5E20" } }}
+          />
+        }
+        label={
+          <Typography
+            sx={{ fontSize: "0.85rem", fontWeight: 600, color: DARK }}
+          >
+            Remote only
+          </Typography>
+        }
+        sx={{ mb: 2 }}
       />
 
       <TextField
@@ -63,7 +102,7 @@ export default function JobFilters({ filters, onChange }) {
         <MenuItem value="">Any</MenuItem>
         {EXPERIENCE_OPTIONS.map((opt) => (
           <MenuItem key={opt} value={opt}>
-            {opt}
+            {formatExperience(opt)}
           </MenuItem>
         ))}
       </TextField>

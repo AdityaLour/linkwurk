@@ -20,6 +20,7 @@ export default function JobsListPage() {
     skills: [],
     salaryMin: "",
     isRemote: false,
+    search: "",
   });
   const [savedJobIds, setSavedJobIds] = useState(new Set());
 
