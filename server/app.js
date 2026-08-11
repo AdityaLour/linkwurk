@@ -39,6 +39,7 @@ app.use('/api/saved-jobs', savedJobRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/universities', universityRoutes);
 app.use('/api/public', publicRoutes);
+app.get('/health', (req, res) => res.status(200).send('OK'));
 
 const PORT = process.env.PORT | 5000
 
