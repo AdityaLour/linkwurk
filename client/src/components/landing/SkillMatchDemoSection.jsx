@@ -11,6 +11,26 @@ const EXTRA_LEFT = "Node.js";
 const EXTRA_RIGHT = "REST APIs";
 const DELAYS = [400, 1100, 1800, 2500];
 
+const pillSx = {
+  border: `2.5px solid ${DARK}`,
+  bgcolor: GOLD,
+  color: DARK,
+  fontWeight: 700,
+  fontSize: "0.72rem",
+  px: 1,
+  py: 0.6,
+  mb: 1.5,
+};
+
+const dimPillSx = {
+  border: "2px solid #D8D3C7",
+  color: "#A9A296",
+  fontWeight: 700,
+  fontSize: "0.72rem",
+  px: 1,
+  py: 0.6,
+};
+
 function MatchAnimation() {
   const [percent, setPercent] = useState(0);
 
@@ -48,7 +68,61 @@ function MatchAnimation() {
         match with Frontend Developer
       </Typography>
 
-      <Box sx={{ position: "relative", maxWidth: 480, mx: "auto" }}>
+      {/* Mobile: stacked, no connecting lines — a side-by-side line concept doesn't translate to one column */}
+      <Box
+        sx={{
+          display: { xs: "block", sm: "none" },
+          maxWidth: 260,
+          mx: "auto",
+          textAlign: "left",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            color: "#7A7267",
+            mb: 1,
+          }}
+        >
+          Your skills
+        </Typography>
+        {MATCH_ROWS.map((label) => (
+          <Box key={label} sx={{ ...pillSx, width: "100%" }}>
+            {label}
+          </Box>
+        ))}
+        <Box sx={{ ...dimPillSx, width: "100%", mb: 2.5 }}>{EXTRA_LEFT}</Box>
+
+        <Typography
+          sx={{
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            color: "#7A7267",
+            mb: 1,
+          }}
+        >
+          This job needs
+        </Typography>
+        {MATCH_ROWS.map((label) => (
+          <Box key={label} sx={{ ...pillSx, width: "100%" }}>
+            {label}
+          </Box>
+        ))}
+        <Box sx={{ ...dimPillSx, width: "100%" }}>{EXTRA_RIGHT}</Box>
+      </Box>
+
+      {/* Tablet/desktop: side-by-side with connecting lines */}
+      <Box
+        sx={{
+          display: { xs: "none", sm: "block" },
+          position: "relative",
+          maxWidth: 480,
+          mx: "auto",
+        }}
+      >
         <Box
           component="svg"
           width="100%"
@@ -90,36 +164,11 @@ function MatchAnimation() {
               Your skills
             </Typography>
             {MATCH_ROWS.map((label) => (
-              <Box
-                key={label}
-                sx={{
-                  width: 150,
-                  border: `2.5px solid ${DARK}`,
-                  bgcolor: GOLD,
-                  color: DARK,
-                  fontWeight: 700,
-                  fontSize: "0.72rem",
-                  px: 1,
-                  py: 0.6,
-                  mb: 1.5,
-                }}
-              >
+              <Box key={label} sx={{ ...pillSx, width: 150 }}>
                 {label}
               </Box>
             ))}
-            <Box
-              sx={{
-                width: 150,
-                border: "2px solid #D8D3C7",
-                color: "#A9A296",
-                fontWeight: 700,
-                fontSize: "0.72rem",
-                px: 1,
-                py: 0.6,
-              }}
-            >
-              {EXTRA_LEFT}
-            </Box>
+            <Box sx={{ ...dimPillSx, width: 150 }}>{EXTRA_LEFT}</Box>
           </Box>
           <Box sx={{ textAlign: "right" }}>
             <Typography
@@ -134,36 +183,11 @@ function MatchAnimation() {
               This job needs
             </Typography>
             {MATCH_ROWS.map((label) => (
-              <Box
-                key={label}
-                sx={{
-                  width: 150,
-                  border: `2.5px solid ${DARK}`,
-                  bgcolor: GOLD,
-                  color: DARK,
-                  fontWeight: 700,
-                  fontSize: "0.72rem",
-                  px: 1,
-                  py: 0.6,
-                  mb: 1.5,
-                  ml: "auto",
-                }}
-              >
+              <Box key={label} sx={{ ...pillSx, width: 150, ml: "auto" }}>
                 {label}
               </Box>
             ))}
-            <Box
-              sx={{
-                width: 150,
-                border: "2px solid #D8D3C7",
-                color: "#A9A296",
-                fontWeight: 700,
-                fontSize: "0.72rem",
-                px: 1,
-                py: 0.6,
-                ml: "auto",
-              }}
-            >
+            <Box sx={{ ...dimPillSx, width: 150, ml: "auto" }}>
               {EXTRA_RIGHT}
             </Box>
           </Box>
@@ -191,7 +215,7 @@ export default function SkillMatchDemoSection() {
         sx={{
           fontFamily: '"Space Grotesk", sans-serif',
           fontWeight: 800,
-          fontSize: { xs: "1.5rem", md: "1.8rem" },
+          fontSize: { xs: "1.4rem", md: "1.8rem" },
           color: DARK,
           textTransform: "uppercase",
           mb: 0.5,
@@ -200,7 +224,12 @@ export default function SkillMatchDemoSection() {
         See exactly why you match
       </Typography>
       <Typography
-        sx={{ color: "#2F5A33", fontWeight: 700, mb: 3, fontSize: "1rem" }}
+        sx={{
+          color: "#2F5A33",
+          fontWeight: 700,
+          mb: 3,
+          fontSize: { xs: "0.9rem", md: "1rem" },
+        }}
       >
         Every recommendation shows its work.
       </Typography>

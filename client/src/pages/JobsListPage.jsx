@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Skeleton, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Skeleton,
+  Alert,
+  IconButton,
+  Drawer,
+  Badge,
+} from "@mui/material";
+import TuneIcon from "@mui/icons-material/Tune";
+import CloseIcon from "@mui/icons-material/Close";
 import JobFilters from "@/features/jobs/components/JobFilters";
 import JobListRow from "@/features/jobs/components/JobListRow";
+import SearchField from "@/components/SearchField";
 import { getAllJobs } from "@/features/jobs/api/jobsApi";
 import { getSavedJobs, toggleSaveJob } from "@/features/jobs/api/savedJobsApi";
 import { useAuth } from "@/context/AuthContext";
 
 const DARK = "#14431A";
+const GREEN = "#1B5E20";
 const BORDER = `3px solid ${DARK}`;
 
 export default function JobsListPage() {
@@ -23,6 +35,7 @@ export default function JobsListPage() {
     search: "",
   });
   const [savedJobIds, setSavedJobIds] = useState(new Set());
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -62,6 +75,14 @@ export default function JobsListPage() {
     await toggleSaveJob(jobId);
   };
 
+  const activeFilterCount = [
+    filters.location,
+    filters.experienceRequired,
+    filters.salaryMin,
+    filters.isRemote,
+    filters.skills?.length > 0,
+  ].filter(Boolean).length;
+
   return (
     <Box
       sx={{
@@ -96,6 +117,37 @@ export default function JobsListPage() {
           </Alert>
         )}
 
+        {/* Search + filter trigger — always visible, own row on mobile */}
+        <Box
+          sx={{ display: "flex", gap: 1.5, mb: 3, alignItems: "flex-start" }}
+        >
+          <Box sx={{ flex: 1 }}>
+            <SearchField
+              value={filters.search || ""}
+              onChange={(v) => setFilters({ ...filters, search: v })}
+              placeholder="Search jobs..."
+            />
+          </Box>
+          <Badge
+            badgeContent={activeFilterCount}
+            color="warning"
+            sx={{ display: { xs: "block", md: "none" } }}
+          >
+            <IconButton
+              onClick={() => setFilterDrawerOpen(true)}
+              sx={{
+                border: `2px solid ${DARK}`,
+                borderRadius: 0,
+                color: DARK,
+                bgcolor: "#FFFFFF",
+                flexShrink: 0,
+              }}
+            >
+              <TuneIcon />
+            </IconButton>
+          </Badge>
+        </Box>
+
         <Box
           sx={{
             display: "flex",
@@ -103,8 +155,15 @@ export default function JobsListPage() {
             flexDirection: { xs: "column", md: "row" },
           }}
         >
-          <Box sx={{ width: { md: 260 }, flexShrink: 0 }}>
-            <JobFilters filters={filters} onChange={setFilters} />
+          {/* Desktop sidebar — filters only, search lives above now */}
+          <Box
+            sx={{
+              width: { md: 260 },
+              flexShrink: 0,
+              display: { xs: "none", md: "block" },
+            }}
+          >
+            <JobFilters filters={filters} onChange={setFilters} hideSearch />
           </Box>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -124,7 +183,7 @@ export default function JobsListPage() {
             <Box
               sx={{
                 border: BORDER,
-                boxShadow: "5px 5px 0px #1B5E20",
+                boxShadow: `5px 5px 0px ${GREEN}`,
                 bgcolor: "#FFFFFF",
                 maxHeight: "70vh",
                 overflowY: "auto",
@@ -163,6 +222,51 @@ export default function JobsListPage() {
           </Box>
         </Box>
       </Box>
+
+      {/* Mobile filter drawer */}
+      <Drawer
+        anchor="right"
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        slotProps={{
+          paper: { sx: { width: 300, borderLeft: `3px solid ${DARK}` } },
+        }}
+      >
+        <Box sx={{ p: 2.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography
+              sx={{
+                fontWeight: 700,
+                textTransform: "uppercase",
+                color: DARK,
+                fontSize: "0.9rem",
+              }}
+            >
+              Filters
+            </Typography>
+            <IconButton
+              onClick={() => setFilterDrawerOpen(false)}
+              size="small"
+              sx={{ color: DARK }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <JobFilters
+            filters={filters}
+            onChange={setFilters}
+            hideSearch
+            hideHeading
+          />
+        </Box>
+      </Drawer>
     </Box>
   );
 }

@@ -27,7 +27,12 @@ const fieldSx = {
   },
 };
 
-export default function JobFilters({ filters, onChange }) {
+export default function JobFilters({
+  filters,
+  onChange,
+  hideSearch,
+  hideHeading,
+}) {
   return (
     <Box
       sx={{
@@ -37,25 +42,29 @@ export default function JobFilters({ filters, onChange }) {
         p: 2.5,
       }}
     >
-      <Typography
-        sx={{
-          fontSize: "0.8rem",
-          fontWeight: 700,
-          textTransform: "uppercase",
-          color: DARK,
-          mb: 2,
-        }}
-      >
-        Filters
-      </Typography>
+      {!hideHeading && (
+        <Typography
+          sx={{
+            fontSize: "0.8rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            color: DARK,
+            mb: 2,
+          }}
+        >
+          Filters
+        </Typography>
+      )}
 
-      <Box sx={{ mb: 2.5 }}>
-        <SearchField
-          value={filters.search || ""}
-          onChange={(v) => onChange({ ...filters, search: v })}
-          placeholder="Search jobs..."
-        />
-      </Box>
+      {!hideSearch && (
+        <Box sx={{ mb: 2.5 }}>
+          <SearchField
+            value={filters.search || ""}
+            onChange={(v) => onChange({ ...filters, search: v })}
+            placeholder="Search jobs..."
+          />
+        </Box>
+      )}
 
       <TextField
         label="Location"
