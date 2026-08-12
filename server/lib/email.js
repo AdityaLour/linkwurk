@@ -7,7 +7,7 @@ export const sendVerificationEmail = async (toEmail, token) => {
 
     try {
         const response = await resend().emails.send({
-            from: "onboarding@resend.dev",
+            from: "LinkWurk <noreply@linkwurk.online>",
             to: toEmail,
             subject: "Verify your LinkWurk email",
             html: `<a href="${verifyUrl}">Verify</a>`
